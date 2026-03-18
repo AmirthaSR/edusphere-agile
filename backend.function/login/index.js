@@ -1,25 +1,13 @@
 module.exports = async function (context, req) {
+    context.log('JavaScript HTTP trigger function processed a request.');
 
-    const { phone, password } = req.body || {};
+    const name = (req.query.name || (req.body && req.body.name));
+    const responseMessage = name
+        ? "Hello, " + name + ". This HTTP triggered function executed successfully."
+        : "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.";
 
-    if (!phone || !password) {
-        context.res = {
-            status: 400,
-            body: { message: "Missing phone or password" }
-        };
-        return;
-    }
-
-    // Dummy login check (for now)
-    if (phone === "1234567890" && password === "admin") {
-        context.res = {
-            status: 200,
-            body: { message: "Login successful 🎉" }
-        };
-    } else {
-        context.res = {
-            status: 401,
-            body: { message: "Invalid credentials ❌" }
-        };
-    }
-};
+    context.res = {
+        // status: 200, /* Defaults to 200 */
+        body: responseMessage
+    };
+}

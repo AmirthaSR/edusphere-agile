@@ -1,0 +1,47 @@
+import { app } from "@azure/functions";
+
+app.http("register", {
+    methods: ["POST"],
+    authLevel: "anonymous",
+    handler: async (request, context) => {
+        try {
+            const body = await request.json();
+
+            const { name, email, password } = body;
+
+            // ✅ Validation
+            if (!name || !email || !password) {
+                return {
+                    status: 400,
+                    jsonBody: {
+                        message: "All fields are required"
+                    }
+                };
+            }
+
+            // ⚠️ TEMP: Fake storage (we replace with DB later)
+            const user = {
+                name,
+                email
+            };
+
+            return {
+                status: 200,
+                jsonBody: {
+                    message: "User registered successfully",
+                    user
+                }
+            };
+
+        } catch (error) {
+            context.log(error);
+
+            return {
+                status: 500,
+                jsonBody: {
+                    message: "Server error"
+                }
+            };
+        }
+    }
+});
