@@ -1,4 +1,4 @@
-# EduSphere
+# EduSphere Agile
 
 EduSphere is an online learning and course management platform.
 
