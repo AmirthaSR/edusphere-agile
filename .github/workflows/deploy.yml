@@ -19,5 +19,5 @@ jobs:
           action: "upload"
           app_location: "frontend"
           api_location: ""
-          output_location: "build"
-          skip_app_build: false
+          output_location: ""        # ✅ empty — no build needed
+          skip_app_build: true       # ✅ plain HTML, nothing to build
