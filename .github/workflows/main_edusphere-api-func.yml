@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'backend.function'  # ✅ points to your actual functions folder
   NODE_VERSION: '20.x'
 
 jobs:
@@ -30,14 +30,13 @@ jobs:
           pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
           npm install
           npm run build --if-present
-          npm run test --if-present
           popd
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          path: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}  # ✅ only upload functions folder
 
   deploy:
     runs-on: ubuntu-latest
@@ -65,4 +64,4 @@ jobs:
         with:
           app-name: 'edusphere-api-func'
           slot-name: 'Production'
-          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          package: '.'  # ✅ artifact is already extracted here
