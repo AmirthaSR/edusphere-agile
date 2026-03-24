@@ -27,8 +27,8 @@ jobs:
           action: "upload"
           app_location: "frontend"
           api_location: ""
-        
-          output_location: "build"
+          output_location: ""        # ✅ empty — no build needed
+          skip_app_build: true       # ✅ plain HTML, nothing to build
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
