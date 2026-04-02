@@ -1,4 +1,4 @@
-const BASE_URL = "https://edusphere-api-func.azurewebsites.net";
+const BASE_URL = "https://edusphere-api-func-f7c4fbgxgncweafs.centralindia-01.azurewebsites.net";
 
 async function register() {
   const name = document.getElementById("name").value;
