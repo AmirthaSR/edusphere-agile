@@ -1,36 +1,37 @@
-const BASE_URL = "http://localhost:5000";
-
 // REGISTER
 async function register() {
   const name = document.getElementById("name").value;
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
-
-  const res = await fetch(`${BASE_URL}/api/auth/register`, {
+  const res = await fetch("https://edusphere-api-func.azurewebsites.net/api/register", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, email, password })
   });
-
   const data = await res.json();
-  alert(data.message);
+  document.getElementById("message").innerText = data.message;
 }
 
 // LOGIN
 async function login() {
-  const email = document.getElementById("email").value;
+  const name = document.getElementById("name").value;
   const password = document.getElementById("password").value;
-
-  const res = await fetch(`${BASE_URL}/api/auth/login`, {
+  const res = await fetch("https://edusphere-api-func.azurewebsites.net/api/login", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ email, password })
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, password })
   });
-
   const data = await res.json();
-  alert(data.message);
+  if (res.ok) {
+    localStorage.setItem("user", JSON.stringify({ name }));
+    window.location.href = "index.html";
+  } else {
+    document.getElementById("message").innerText = data.message;
+  }
+}
+
+// LOGOUT
+function logout() {
+  localStorage.removeItem("user");
+  window.location.href = "login.html";
 }
