@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>EduSphere — Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #f4f6f9; }
+
+    header {
+      background: #0078d4;
+      color: white;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 { font-size: 22px; }
+    .logout-btn {
+      background: white;
+      color: #0078d4;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .logout-btn:hover { background: #e0f0ff; }
+
+    .welcome-bar {
+      background: #e8f4fd;
+      padding: 20px 40px;
+      border-bottom: 2px solid #cce4f7;
+    }
+    .welcome-bar h2 { color: #0078d4; font-size: 22px; }
+    .welcome-bar p { color: #555; margin-top: 4px; }
+    .role-badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+      text-transform: capitalize;
+    }
+    .role-badge.student { background: #d4edda; color: #155724; }
+    .role-badge.teacher { background: #fff3cd; color: #856404; }
+
+    .container {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: calc(100vh - 130px);
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      background: white;
+      border-right: 1px solid #ddd;
+      padding: 20px 0;
+    }
+    .sidebar-item {
+      padding: 14px 24px;
+      cursor: pointer;
+      color: #333;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-left: 3px solid transparent;
+    }
+    .sidebar-item:hover { background: #f0f7ff; color: #0078d4; }
+    .sidebar-item.active {
+      background: #e8f4fd;
+      color: #0078d4;
+      border-left: 3px solid #0078d4;
+      font-weight: bold;
+    }
+
+    /* MAIN CONTENT */
+    .main { padding: 30px 40px; }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .section h3 {
+      font-size: 20px;
+      color: #1F4E79;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #BDD7EE;
+      padding-bottom: 8px;
+    }
+
+    /* PROFILE */
+    .profile-card {
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      max-width: 500px;
+    }
+    .profile-card .avatar {
+      width: 80px; height: 80px;
+      background: #0078d4;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 32px; font-weight: bold;
+      margin-bottom: 16px;
+    }
+    .profile-card p { margin: 8px 0; color: #444; font-size: 15px; }
+    .profile-card span { font-weight: bold; color: #222; }
+
+    /* COURSES */
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .course-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      border-top: 4px solid #0078d4;
+    }
+    .course-card h4 { color: #0078d4; margin-bottom: 8px; font-size: 16px; }
+    .course-card p { color: #666; font-size: 13px; }
+    .course-card .tag {
+      margin-top: 12px;
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      background: #e8f4fd;
+      color: #0078d4;
+    }
+
+    /* TEACHER ONLY - add course */
+    .add-course-btn {
+      margin-bottom: 20px;
+      padding: 10px 20px;
+      background: #0078d4;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .add-course-btn:hover { background: #005fa3; }
+
+    /* ANNOUNCEMENTS */
+    .announcement-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      border-left: 4px solid #0078d4;
+    }
+    .announcement-card h4 { color: #1F4E79; margin-bottom: 6px; }
+    .announcement-card p { color: #555; font-size: 14px; }
+    .announcement-card .date { color: #999; font-size: 12px; margin-top: 8px; }
+
+    /* TEACHER ONLY - post announcement */
+    .post-announcement {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .post-announcement input,
+    .post-announcement textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: Arial, sans-serif;
+    }
+    .post-announcement textarea { height: 80px; resize: vertical; }
+    .post-announcement button {
+      padding: 10px 20px;
+      background: #0078d4;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .post-announcement button:hover { background: #005fa3; }
+
+    #message {
+      margin-top: 10px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    #message.success { color: green; }
+    #message.error { color: red; }
+    #message.info { color: #0078d4; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>EduSphere</h1>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+</header>
+
+<div class="welcome-bar">
+  <h2 id="welcome-text">Welcome!</h2>
+  <p>Here's what's happening today.</p>
+  <span class="role-badge" id="role-badge"></span>
+</div>
+
+<div class="container">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-item active" onclick="showSection('profile')">👤 Profile</div>
+    <div class="sidebar-item" onclick="showSection('courses')">📚 Courses</div>
+    <div class="sidebar-item" onclick="showSection('announcements')">📢 Announcements</div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- PROFILE SECTION -->
+    <div class="section active" id="section-profile">
+      <h3>My Profile</h3>
+      <div class="profile-card">
+        <div class="avatar" id="avatar-initial">?</div>
+        <p>Name: <span id="profile-name">—</span></p>
+        <p>Role: <span id="profile-role">—</span></p>
+      </div>
+    </div>
+
+    <!-- COURSES SECTION -->
+    <div class="section" id="section-courses">
+      <h3>Courses</h3>
+
+      <!-- Teacher only -->
+      <div id="teacher-add-course" style="display:none">
+        <button class="add-course-btn">+ Add New Course</button>
+      </div>
+
+      <div class="courses-grid" id="courses-grid">
+        <!-- filled by JS -->
+      </div>
+    </div>
+
+    <!-- ANNOUNCEMENTS SECTION -->
+    <div class="section" id="section-announcements">
+      <h3>Announcements</h3>
+
+      <!-- Teacher only -->
+      <div id="teacher-post-announcement" style="display:none">
+        <div class="post-announcement">
+          <p><strong>Post a New Announcement</strong></p>
+          <input type="text" id="ann-title" placeholder="Title">
+          <textarea id="ann-body" placeholder="Write your announcement here..."></textarea>
+          <button onclick="postAnnouncement()">Post</button>
+          <p id="message"></p>
+        </div>
+      </div>
+
+      <div id="announcements-list">
+        <!-- filled by JS -->
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="auth.js"></script>
+<script>
+  // Sample data — replace with real API calls later
+  const sampleCourses = [
+    { title: "Mathematics 101", desc: "Algebra, geometry and more.", tag: "Core" },
+    { title: "Web Development", desc: "HTML, CSS and JavaScript basics.", tag: "Elective" },
+    { title: "Data Science", desc: "Introduction to Python and data.", tag: "Elective" },
+    { title: "English Literature", desc: "Reading, writing and analysis.", tag: "Core" },
+  ];
+
+  const sampleAnnouncements = [
+    { title: "Welcome to EduSphere!", body: "We are excited to have you on board. Explore your courses and get started.", date: "April 5, 2026" },
+    { title: "Assignment Deadline", body: "Please submit your Week 1 assignments before April 10, 2026.", date: "April 4, 2026" },
+    { title: "System Maintenance", body: "The platform will be down for maintenance on April 7 from 2am to 4am.", date: "April 3, 2026" },
+  ];
+
+  // Load user from localStorage
+  window.onload = function () {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const name = user.name;
+    const role = user.role || "student";
+
+    // Welcome bar
+    document.getElementById("welcome-text").innerText = `Welcome, ${name}!`;
+    const badge = document.getElementById("role-badge");
+    badge.innerText = role;
+    badge.className = `role-badge ${role}`;
+
+    // Profile
+    document.getElementById("profile-name").innerText = name;
+    document.getElementById("profile-role").innerText = role;
+    document.getElementById("avatar-initial").innerText = name.charAt(0).toUpperCase();
+
+    // Teacher-only elements
+    if (role === "teacher") {
+      document.getElementById("teacher-add-course").style.display = "block";
+      document.getElementById("teacher-post-announcement").style.display = "block";
+    }
+
+    // Load courses
+    const grid = document.getElementById("courses-grid");
+    sampleCourses.forEach(course => {
+      grid.innerHTML += `
+        <div class="course-card">
+          <h4>${course.title}</h4>
+          <p>${course.desc}</p>
+          <span class="tag">${course.tag}</span>
+        </div>`;
+    });
+
+    // Load announcements
+    const list = document.getElementById("announcements-list");
+    sampleAnnouncements.forEach(ann => {
+      list.innerHTML += `
+        <div class="announcement-card">
+          <h4>${ann.title}</h4>
+          <p>${ann.body}</p>
+          <p class="date">${ann.date}</p>
+        </div>`;
+    });
+  };
+
+  function showSection(name) {
+    document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll(".sidebar-item").forEach(s => s.classList.remove("active"));
+    document.getElementById("section-" + name).classList.add("active");
+    event.target.classList.add("active");
+  }
+
+  function postAnnouncement() {
+    const title = document.getElementById("ann-title").value;
+    const body = document.getElementById("ann-body").value;
+    const msg = document.getElementById("message");
+
+    if (!title || !body) {
+      msg.innerText = "Please fill in both fields.";
+      msg.className = "error";
+      return;
+    }
+
+    const list = document.getElementById("announcements-list");
+    list.innerHTML = `
+      <div class="announcement-card">
+        <h4>${title}</h4>
+        <p>${body}</p>
+        <p class="date">Just now</p>
+      </div>` + list.innerHTML;
+
+    document.getElementById("ann-title").value = "";
+    document.getElementById("ann-body").value = "";
+    msg.innerText = "Announcement posted!";
+    msg.className = "success";
+  }
+</script>
+
+</body>
+</html>
