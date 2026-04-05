@@ -4,14 +4,8 @@ async function register() {
   const name = document.getElementById("name").value;
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
-
-  if (!name || !email || !password) {
-    showMessage("Please fill in all fields", "error");
-    return;
-  }
-
+  if (!name || !email || !password) { showMessage("Please fill in all fields", "error"); return; }
   showMessage("Registering...", "info");
-
   try {
     const res = await fetch(`${BASE_URL}/api/register`, {
       method: "POST",
@@ -21,22 +15,14 @@ async function register() {
     const data = await res.json();
     if (res.ok) { showMessage(data.message, "success"); }
     else { showMessage(data.message, "error"); }
-  } catch (err) {
-    showMessage("Cannot reach server. Please try again.", "error");
-  }
+  } catch (err) { showMessage("Cannot reach server. Please try again.", "error"); }
 }
 
 async function login() {
   const name = document.getElementById("name").value;
   const password = document.getElementById("password").value;
-
-  if (!name || !password) {
-    showMessage("Please fill in all fields", "error");
-    return;
-  }
-
+  if (!name || !password) { showMessage("Please fill in all fields", "error"); return; }
   showMessage("Logging in...", "info");
-
   try {
     const res = await fetch(`${BASE_URL}/api/login`, {
       method: "POST",
@@ -44,12 +30,12 @@ async function login() {
       body: JSON.stringify({ name, password })
     });
     const data = await res.json();
-    if (res.ok) { window.location.href = "index.html"; }
+    if (res.ok) { localStorage.setItem("user", JSON.stringify({ name })); window.location.href = "index.html"; }
     else { showMessage(data.message, "error"); }
-  } catch (err) {
-    showMessage("Cannot reach server. Please try again.", "error");
-  }
+  } catch (err) { showMessage("Cannot reach server. Please try again.", "error"); }
 }
+
+function logout() { localStorage.removeItem("user"); window.location.href = "login.html"; }
 
 function showMessage(msg, type) {
   const el = document.getElementById("message");
