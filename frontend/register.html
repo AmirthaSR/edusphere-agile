@@ -1,114 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<<<<<<< HEAD
-  <title>EduSphere — Register</title>
-  <style>
-    body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f9; }
-    .box { max-width: 400px; margin: 100px auto; background: white;
-           padding: 40px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    h2 { color: #0078d4; }
-    input { width: 100%; padding: 10px; margin: 8px 0 16px;
-            box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
-    button { width: 100%; padding: 12px; background: #0078d4; color: white;
-             border: none; border-radius: 6px; font-size: 16px; cursor: pointer; }
-    button:hover { background: #005fa3; }
-    #message { margin-top: 14px; color: green; font-weight: bold; }
-    a { color: #0078d4; }
-  </style>
-</head>
-<body>
-  <div class="box">
-    <h2>Create an Account</h2>
-    <input type="text" id="name" placeholder="Your Name">
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="register()">Register</button>
-    <p id="message"></p>
-    <p>Already have an account? <a href="login.html">Login here</a></p>
-  </div>
-  <script src="auth.js"></script>
-=======
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Register — EduSphere</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0a0e1a;
+      --surface: #111827;
+      --border: #1f2d45;
+      --accent: #3b82f6;
+      --accent2: #06b6d4;
+      --text: #e2e8f0;
+      --muted: #64748b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #1a73e8, #0d47a1);
-      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
       display: flex;
       align-items: center;
       justify-content: center;
+      height: 100vh;
     }
-    .card {
-      background: white;
-      padding: 40px;
-      border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+
+    .container {
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
+      padding: 20px;
     }
-    .logo { text-align: center; margin-bottom: 8px; }
-    .logo h1 { color: #1a73e8; font-size: 28px; }
-    .logo p { color: #666; font-size: 14px; margin-top: 4px; }
-    h2 { text-align: center; color: #333; margin: 20px 0; font-size: 22px; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 32px;
+      box-shadow: 0 0 40px rgba(59,130,246,0.08);
+      animation: fadeUp 0.5s ease;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.6rem;
+      text-align: center;
+    }
+
+    h1 span { color: var(--accent); }
+
+    .subtitle {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 6px;
+      margin-bottom: 24px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.2rem;
+    }
+
     input {
       width: 100%;
-      padding: 12px 16px;
-      margin-bottom: 16px;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      font-size: 15px;
-      transition: border 0.3s;
-      outline: none;
+      padding: 12px;
+      margin-bottom: 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #1a2235;
+      color: var(--text);
+      font-size: 0.9rem;
     }
-    input:focus { border-color: #1a73e8; }
+
+    input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
     button {
       width: 100%;
-      padding: 13px;
-      background: #1a73e8;
-      color: white;
+      padding: 12px;
+      border-radius: 10px;
       border: none;
-      border-radius: 8px;
-      font-size: 16px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      color: white;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.3s;
+      margin-top: 6px;
+      transition: transform 0.2s;
     }
-    button:hover { background: #1558b0; }
-    #message {
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .login-link {
       text-align: center;
-      margin-top: 14px;
-      font-size: 14px;
-      padding: 8px;
-      border-radius: 6px;
+      margin-top: 18px;
+      font-size: 0.85rem;
+      color: var(--muted);
     }
-    #message.success { background: #e6f4ea; color: #2e7d32; }
-    #message.error { background: #fdecea; color: #c62828; }
-    #message.info { background: #e8f0fe; color: #1a73e8; }
-    .footer { text-align: center; margin-top: 20px; font-size: 14px; color: #666; }
-    .footer a { color: #1a73e8; text-decoration: none; font-weight: 600; }
+
+    .login-link a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
   </style>
 </head>
 <body>
+
+<div class="container">
   <div class="card">
-    <div class="logo">
-      <h1>EduSphere</h1>
-      <p>Smart Learning Platform</p>
-    </div>
+
+    <h1>Edu<span>Sphere</span></h1>
+    <div class="subtitle">Smart Learning Platform</div>
+
     <h2>Create Account</h2>
-    <input type="text" id="name" placeholder="Your Name">
-    <input type="email" id="email" placeholder="Email Address">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="register()">Register</button>
-    <p id="message"></p>
-    <div class="footer">
+
+    <input type="text" placeholder="Your Name" required>
+    <input type="email" placeholder="Email Address" required>
+    <input type="password" placeholder="Password" required>
+
+    <button>Register</button>
+
+    <div class="login-link">
       Already have an account? <a href="login.html">Login</a>
     </div>
+
   </div>
-  <script src="js/auth.js"></script>
->>>>>>> f51d87a430ac87b8d94f36ad16fb307623ebda4e
+</div>
+
 </body>
 </html>
