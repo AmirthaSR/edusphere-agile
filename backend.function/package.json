@@ -2,7 +2,6 @@
   "name": "edusphere-functions",
   "version": "1.0.0",
   "description": "Azure Functions backend for EduSphere",
-  "main": "index.js",
   "scripts": {
     "start": "func start"
   },
