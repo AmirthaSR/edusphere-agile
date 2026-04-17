@@ -1,26 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<<<<<<< HEAD
-  <title>EduSphere — Login</title>
-  <style>
-    body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f9; }
-    .box { max-width: 400px; margin: 100px auto; background: white;
-           padding: 40px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    h2 { color: #0078d4; }
-    input { width: 100%; padding: 10px; margin: 8px 0 16px;
-            box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
-    button { width: 100%; padding: 12px; background: #0078d4; color: white;
-             border: none; border-radius: 6px; font-size: 16px; cursor: pointer; }
-    button:hover { background: #005fa3; }
-    #message { margin-top: 14px; color: red; font-weight: bold; }
-    a { color: #0078d4; }
-  </style>
-</head>
-<body>
-  <div class="box">
-    <h2>Login to EduSphere</h2>
-=======
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login — EduSphere</title>
@@ -53,7 +33,6 @@
       border: 2px solid #e0e0e0;
       border-radius: 8px;
       font-size: 15px;
-      transition: border 0.3s;
       outline: none;
     }
     input:focus { border-color: #1a73e8; }
@@ -67,7 +46,6 @@
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.3s;
     }
     button:hover { background: #1558b0; }
     #message {
@@ -78,8 +56,8 @@
       border-radius: 6px;
     }
     #message.success { background: #e6f4ea; color: #2e7d32; }
-    #message.error { background: #fdecea; color: #c62828; }
-    #message.info { background: #e8f0fe; color: #1a73e8; }
+    #message.error   { background: #fdecea; color: #c62828; }
+    #message.info    { background: #e8f0fe; color: #1a73e8; }
     .footer { text-align: center; margin-top: 20px; font-size: 14px; color: #666; }
     .footer a { color: #1a73e8; text-decoration: none; font-weight: 600; }
   </style>
@@ -91,21 +69,14 @@
       <p>Smart Learning Platform</p>
     </div>
     <h2>Welcome Back</h2>
->>>>>>> f51d87a430ac87b8d94f36ad16fb307623ebda4e
-    <input type="text" id="name" placeholder="Your Name">
+    <input type="email"    id="email"    placeholder="Email Address">
     <input type="password" id="password" placeholder="Password">
     <button onclick="login()">Login</button>
     <p id="message"></p>
-<<<<<<< HEAD
-    <p>Don't have an account? <a href="register.html">Register here</a></p>
-  </div>
-  <script src="auth.js"></script>
-=======
     <div class="footer">
       Don't have an account? <a href="register.html">Register</a>
     </div>
   </div>
-  <script src="js/auth.js"></script>
->>>>>>> f51d87a430ac87b8d94f36ad16fb307623ebda4e
+  <script src="auth.js"></script>
 </body>
 </html>
