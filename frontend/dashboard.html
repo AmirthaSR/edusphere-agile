@@ -631,20 +631,20 @@ async function loadCourses() {
 
     const list = document.getElementById('courseList');
     list.innerHTML = courses.map(c => `
-      <div class="course-item" onclick="window.location.href='course-detail.html?courseId=${c.id}'" style="cursor:pointer">
-        <div class="course-icon" style="background:${c.bg}">${c.icon}</div>
-        <div class="course-info">
-          <div class="course-name">${c.name}</div>
-          <div class="course-meta">${c.lessons}</div>
-        </div>
-        <div class="progress-wrap">
-          <div class="progress-label"><span>Progress</span><span>${c.progress}%</span></div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width:0%" data-width="${c.progress}%"></div>
-          </div>
-        </div>
+  <div class="course-item" onclick="window.location.href='course-detail.html?courseId=${c.id}'" style="cursor:pointer">
+    <div class="course-icon" style="background:${c.bg}">${c.icon}</div>
+    <div class="course-info">
+      <div class="course-name">${c.name}</div>
+      <div class="course-meta">${c.description || c.lessons}</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label"><span>Progress</span><span>${c.progress}%</span></div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:0%" data-width="${c.progress}%"></div>
       </div>
-    `).join('');
+    </div>
+  </div>
+`).join('');
 
     requestAnimationFrame(() => {
       document.querySelectorAll('.progress-fill').forEach(el => {
