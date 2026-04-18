@@ -4,12 +4,10 @@ async function register() {
   const name = document.getElementById("name").value;
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
-
   if (!name || !email || !password) { showMessage("Please fill in all fields", "error"); return; }
-
   showMessage("Registering...", "info");
   try {
-    const res = await fetch(`${BASE_URL}/api/register`, {
+    const res = await fetch(`${BASE_URL}/api/registerUser`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password })
@@ -21,29 +19,25 @@ async function register() {
 }
 
 async function login() {
-  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
-
-  if (!name || !password) { showMessage("Please fill in all fields", "error"); return; }
-
+  if (!email || !password) { showMessage("Please fill in all fields", "error"); return; }
   showMessage("Logging in...", "info");
   try {
-    const res = await fetch(`${BASE_URL}/api/login`, {
+    const res = await fetch(`${BASE_URL}/api/loginUser`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, password })
+      body: JSON.stringify({ email, password })
     });
     const data = await res.json();
     if (res.ok) {
-      // ✅ Save name + email so dashboard can read it
       const user = {
-        name: data.name || name,
-        email: data.email || ""
+        name: data.name || "",
+        email: data.email || email,
+        role: data.role || "student"
       };
       localStorage.setItem("user", JSON.stringify(user));
       sessionStorage.setItem("user", JSON.stringify(user));
-
-      // ✅ Redirect to dashboard instead of index.html
       window.location.href = "dashboard.html";
     } else {
       showMessage(data.message, "error");
