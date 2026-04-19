@@ -12,20 +12,19 @@ module.exports = async function (context, req) {
   try {
     await sql.connect(config);
     const result = await sql.query`
-      SELECT course_id, title, description, category FROM Courses
+      SELECT course_id, title, description FROM Courses
     `;
     await sql.close();
 
     const courses = result.recordset.map((c, i) => ({
-      id:          c.course_id,
-      name:        c.title,
-      description: c.description,
-      category:    c.category,
-      icon:        'book',
-      bg:          '#1e3a5f',
-      progress:    0,
-      lessons:     c.category || 'General'
-    }));
+    id:          c.course_id,
+    name:        c.title,
+    description: c.description,
+    icon:        'book',
+    bg:          '#1e3a5f',
+    progress:    0,
+    lessons:     'General'
+  }));
 
     context.res = {
       status: 200,
