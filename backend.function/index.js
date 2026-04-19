@@ -1,5 +1,5 @@
 module.exports = async function (context, req) {
 context.res = {
-body: { message: "Login working" }
+body: { message: "Register working" }
 };
 };
