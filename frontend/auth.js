@@ -9,7 +9,7 @@ async function register() {
 
   showMessage("Registering...", "info");
   try {
-    const res = await fetch(`${BASE_URL}/api/register`, {
+    const res = await fetch(`${BASE_URL}/api/registerUser`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password })
@@ -28,7 +28,7 @@ async function login() {
 
   showMessage("Logging in...", "info");
   try {
-    const res = await fetch(`${BASE_URL}/api/login`, {
+    const res = await fetch(`${BASE_URL}/api/loginUser`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, password })
