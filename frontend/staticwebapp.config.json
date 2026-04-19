@@ -1,0 +1,12 @@
+{
+  "routes": [
+    {
+      "route": "/",
+      "redirect": "/login.html",
+      "statusCode": 302
+    }
+  ],
+  "navigationFallback": {
+    "rewrite": "/login.html"
+  }
+}

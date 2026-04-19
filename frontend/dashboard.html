@@ -547,126 +547,140 @@
   <script>
     const BASE_URL = "https://edusphere-api-func-f7c4fbgxgncweafs.centralindia-01.azurewebsites.net/api";
 
-    const MOCK_COURSES = [
-      { name: "Data Structures & Algorithms", icon: "🧮", bg: "#1e3a5f", progress: 72, lessons: "18/25 lessons" },
-      { name: "Web Development Fundamentals", icon: "🌐", bg: "#1a3d2e", progress: 91, lessons: "22/24 lessons" },
-      { name: "Machine Learning Basics",      icon: "🤖", bg: "#3b2a1a", progress: 40, lessons: "8/20 lessons"  },
-      { name: "Cloud Computing with Azure",   icon: "☁️", bg: "#1e2b4a", progress: 58, lessons: "12/21 lessons" },
-      { name: "Database Management",          icon: "🗄️", bg: "#2a1e3d", progress: 85, lessons: "17/20 lessons" },
-    ];
+const MOCK_ACTIVITY = [
+  { icon: "✅", bg: "rgba(16,185,129,0.15)", color: "#10b981", text: "<strong>Completed</strong> Module 3 — Web Dev", time: "2 hours ago" },
+  { icon: "🏅", bg: "rgba(245,158,11,0.15)", color: "#f59e0b", text: "<strong>Earned badge:</strong> Fast Learner", time: "5 hours ago" },
+  { icon: "📖", bg: "rgba(59,130,246,0.15)", color: "#3b82f6", text: "<strong>Started</strong> ML Basics — Intro to Neural Nets", time: "Yesterday" },
+  { icon: "💬", bg: "rgba(6,182,212,0.15)",  color: "#06b6d4", text: "<strong>Commented</strong> on DSA — Binary Trees", time: "2 days ago" },
+];
 
-    const MOCK_ACTIVITY = [
-      { icon: "✅", bg: "rgba(16,185,129,0.15)", color: "#10b981", text: "<strong>Completed</strong> Module 3 — Web Dev", time: "2 hours ago" },
-      { icon: "🏅", bg: "rgba(245,158,11,0.15)", color: "#f59e0b", text: "<strong>Earned badge:</strong> Fast Learner", time: "5 hours ago" },
-      { icon: "📖", bg: "rgba(59,130,246,0.15)", color: "#3b82f6", text: "<strong>Started</strong> ML Basics — Intro to Neural Nets", time: "Yesterday" },
-      { icon: "💬", bg: "rgba(6,182,212,0.15)",  color: "#06b6d4", text: "<strong>Commented</strong> on DSA — Binary Trees", time: "2 days ago" },
-    ];
+function initials(name) {
+  return name ? name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2) : '?';
+}
 
-    function initials(name) {
-      return name ? name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2) : '?';
-    }
+function showError(msg) {
+  const b = document.getElementById('errorBanner');
+  b.textContent = '⚠ ' + msg;
+  b.style.display = 'block';
+}
 
-    function showError(msg) {
-      const b = document.getElementById('errorBanner');
-      b.textContent = '⚠ ' + msg;
-      b.style.display = 'block';
-    }
+function getUserId() {
+  const raw = sessionStorage.getItem('user') || localStorage.getItem('user');
+  const user = raw ? JSON.parse(raw) : null;
+  return user ? user.user_id || user.id || 1 : 1;
+}
 
-    function loadUserProfile() {
-      const raw = sessionStorage.getItem('user') || localStorage.getItem('user');
-      const user = raw ? JSON.parse(raw) : { name: 'Student', email: 'student@edusphere.com' };
-      const name  = user.name  || 'Student';
-      const email = user.email || '—';
-      const ini   = initials(name);
+function loadUserProfile() {
+  const raw = sessionStorage.getItem('user') || localStorage.getItem('user');
+  const user = raw ? JSON.parse(raw) : { name: 'Student', email: 'student@edusphere.com' };
+  const name  = user.name  || 'Student';
+  const email = user.email || '—';
+  const ini   = initials(name);
 
-      document.getElementById('topAvatar').textContent      = ini;
-      document.getElementById('topName').textContent        = name;
-      document.getElementById('profileAvatar').textContent  = ini;
-      document.getElementById('profileName').textContent    = name;
-      document.getElementById('profileEmail').textContent   = email;
+  document.getElementById('topAvatar').textContent      = ini;
+  document.getElementById('topName').textContent        = name;
+  document.getElementById('profileAvatar').textContent  = ini;
+  document.getElementById('profileName').textContent    = name;
+  document.getElementById('profileEmail').textContent   = email;
 
-      const hour = new Date().getHours();
-      const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-      document.getElementById('greeting').textContent = `${greet}, ${name.split(' ')[0]} 👋`;
-    }
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('greeting').textContent = `${greet}, ${name.split(' ')[0]} 👋`;
+}
 
-    async function loadAllUsers() {
-      try {
-        const res = await fetch(`${BASE_URL}/getAllUsers`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        const users = data.users || data;
+async function loadUserStats() {
+  try {
+    const userId = getUserId();
+    const res = await fetch(`${BASE_URL}/getUserStats?userId=${userId}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
 
-        document.getElementById('statUsers').textContent         = users.length;
-        document.getElementById('statUsersChange').textContent   = `↑ ${users.length} registered`;
-        document.getElementById('statCompleted').textContent     = Math.floor(users.length * 2.4);
-        document.getElementById('statActive').textContent        = Math.ceil(users.length * 0.3);
-      } catch (err) {
-        console.warn('getAllUsers failed:', err.message);
-        document.getElementById('statUsers').textContent       = '—';
-        document.getElementById('statUsersChange').textContent = 'Could not load';
-        document.getElementById('statCompleted').textContent   = '—';
-        document.getElementById('statActive').textContent      = '—';
-        showError('Could not load user stats from backend. Check your network or API.');
-      }
-    }
+    document.getElementById('statCourses').textContent   = data.totalCourses;
+    document.getElementById('statCompleted').textContent = data.completedLessons;
+    document.getElementById('statActive').textContent    = data.avgProgress + '%';
+    document.getElementById('pStatCourses').textContent  = data.totalCourses;
+    document.getElementById('pStatProgress').textContent = data.avgProgress + '%';
+    document.getElementById('courseCount').textContent   = `${data.totalCourses} enrolled`;
+  } catch (err) {
+    console.warn('getUserStats failed:', err.message);
+    showError('Could not load user stats from backend. Check your network or API.');
+  }
+}
 
-    function renderCourses() {
-      const list = document.getElementById('courseList');
-      document.getElementById('courseCount').textContent    = `${MOCK_COURSES.length} enrolled`;
-      document.getElementById('pStatCourses').textContent   = MOCK_COURSES.length;
-      document.getElementById('statCourses').textContent    = MOCK_COURSES.length;
+async function loadAllUsers() {
+  try {
+    const res = await fetch(`${BASE_URL}/getAllUsers`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const users = data.users || [];
+    document.getElementById('statUsers').textContent       = users.length;
+    document.getElementById('statUsersChange').textContent = `↑ ${users.length} registered`;
+  } catch (err) {
+    console.warn('getAllUsers failed:', err.message);
+    document.getElementById('statUsers').textContent       = '—';
+    document.getElementById('statUsersChange').textContent = 'Could not load';
+  }
+}
 
-      const avg = Math.round(MOCK_COURSES.reduce((s,c) => s + c.progress, 0) / MOCK_COURSES.length);
-      document.getElementById('pStatProgress').textContent  = avg + '%';
+async function loadCourses() {
+  try {
+    const res = await fetch(`${BASE_URL}/getCourses`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const courses = data.courses || [];
 
-      list.innerHTML = MOCK_COURSES.map(c => `
-        <div class="course-item">
-          <div class="course-icon" style="background:${c.bg}">${c.icon}</div>
-          <div class="course-info">
-            <div class="course-name">${c.name}</div>
-            <div class="course-meta">${c.lessons}</div>
-          </div>
-          <div class="progress-wrap">
-            <div class="progress-label"><span>Progress</span><span>${c.progress}%</span></div>
-            <div class="progress-bar">
-              <div class="progress-fill" style="width:0%" data-width="${c.progress}%"></div>
-            </div>
-          </div>
-        </div>
-      `).join('');
+    const list = document.getElementById('courseList');
+    list.innerHTML = courses.map(c => `
+  <div class="course-item" onclick="window.location.href='course-detail.html?courseId=${c.id}'" style="cursor:pointer">
+    <div class="course-icon" style="background:${c.bg}">${c.icon}</div>
+    <div class="course-info">
+      <div class="course-name">${c.name}</div>
+      <div class="course-meta">${c.description || c.lessons}</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label"><span>Progress</span><span>${c.progress}%</span></div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:0%" data-width="${c.progress}%"></div>
+      </div>
+    </div>
+  </div>
+`).join('');
 
-      requestAnimationFrame(() => {
-        document.querySelectorAll('.progress-fill').forEach(el => {
-          el.style.width = el.dataset.width;
-        });
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.progress-fill').forEach(el => {
+        el.style.width = el.dataset.width;
       });
-    }
+    });
+  } catch (err) {
+    console.warn('getCourses failed:', err.message);
+    document.getElementById('courseList').innerHTML = '<div class="loading-state">Could not load courses.</div>';
+  }
+}
 
-    function renderActivity() {
-      document.getElementById('activityList').innerHTML = MOCK_ACTIVITY.map(a => `
-        <div class="activity-item">
-          <div class="activity-dot" style="background:${a.bg};color:${a.color}">${a.icon}</div>
-          <div class="activity-content">
-            <div class="activity-text">${a.text}</div>
-            <div class="activity-time">${a.time}</div>
-          </div>
-        </div>
-      `).join('');
-    }
+function renderActivity() {
+  document.getElementById('activityList').innerHTML = MOCK_ACTIVITY.map(a => `
+    <div class="activity-item">
+      <div class="activity-dot" style="background:${a.bg};color:${a.color}">${a.icon}</div>
+      <div class="activity-content">
+        <div class="activity-text">${a.text}</div>
+        <div class="activity-time">${a.time}</div>
+      </div>
+    </div>
+  `).join('');
+}
 
-    function handleLogout() {
-      sessionStorage.clear();
-      localStorage.removeItem('user');
-      window.location.href = 'index.html';
-    }
+function handleLogout() {
+  sessionStorage.clear();
+  localStorage.removeItem('user');
+  window.location.href = 'index.html';
+}
 
-    (async () => {
-      loadUserProfile();
-      renderCourses();
-      renderActivity();
-      await loadAllUsers();
-    })();
+(async () => {
+  loadUserProfile();
+  renderActivity();
+  await Promise.all([loadCourses(), loadUserStats(), loadAllUsers()]);
+})();
   </script>
+    
 </body>
 </html>
