@@ -32,6 +32,7 @@ async function login() {
     const data = await res.json();
     if (res.ok) {
       const user = {
+        user_id: data.user_id || data.id,
         name: data.name || "",
         email: data.email || email,
         role: data.role || "student"

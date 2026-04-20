@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EduSphere — Courses</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --surface: #111827;
+      --surface2: #1a2235;
+      --border: #1f2d45;
+      --accent: #3b82f6;
+      --accent2: #06b6d4;
+      --gold: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --card-glow: 0 0 40px rgba(59,130,246,0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .sidebar {
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      width: 230px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 28px 20px;
+      z-index: 100;
+      animation: slideInLeft 0.5s ease both;
+    }
+    @keyframes slideInLeft {
+      from { transform: translateX(-100%); opacity: 0; }
+      to   { transform: translateX(0);    opacity: 1; }
+    }
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      color: #fff;
+      margin-bottom: 40px;
+      letter-spacing: -0.5px;
+    }
+    .logo span { color: var(--accent); }
+    .nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+      text-decoration: none;
+    }
+    .nav-item:hover { color: var(--text); background: var(--surface2); }
+    .nav-item.active {
+      color: var(--accent);
+      background: rgba(59,130,246,0.1);
+      border-color: rgba(59,130,246,0.2);
+    }
+    .nav-item svg { flex-shrink: 0; }
+    .sidebar-footer { border-top: 1px solid var(--border); padding-top: 20px; }
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 0.875rem;
+      transition: all 0.2s;
+      border: none;
+      background: none;
+      width: 100%;
+      font-family: inherit;
+    }
+    .logout-btn:hover { color: var(--danger); background: rgba(239,68,68,0.08); }
+
+    .main {
+      margin-left: 230px;
+      padding: 32px 36px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 36px;
+      animation: fadeUp 0.5s 0.1s ease both;
+    }
+    .topbar-left h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #fff;
+    }
+    .topbar-left p { color: var(--muted); font-size: 0.875rem; margin-top: 2px; }
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 8px 18px 8px 8px;
+    }
+    .avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700; font-size: 0.85rem; color: #fff;
+    }
+    .user-chip span { font-size: 0.875rem; font-weight: 500; }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
+      animation: fadeUp 0.5s 0.15s ease both;
+      flex-wrap: wrap;
+    }
+    .search-wrap {
+      position: relative;
+      width: 280px;
+    }
+    .search-wrap svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+    }
+    .search-input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px 10px 40px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input::placeholder { color: var(--muted); }
+    .search-input:focus { border-color: var(--accent); }
+
+    .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-tab {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .filter-tab:hover { color: var(--text); border-color: rgba(59,130,246,0.3); }
+    .filter-tab.active {
+      background: rgba(59,130,246,0.12);
+      color: var(--accent);
+      border-color: rgba(59,130,246,0.3);
+    }
+
+    .results-count {
+      margin-left: auto;
+      font-size: 0.8rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .course-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      animation: fadeUp 0.5s ease both;
+      text-decoration: none;
+      display: block;
+    }
+    .course-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(59,130,246,0.35);
+      box-shadow: 0 12px 40px rgba(59,130,246,0.12);
+    }
+
+    .card-banner {
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.8rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .card-banner::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 50%, var(--surface) 100%);
+    }
+
+    .card-body { padding: 18px 20px 20px; }
+
+    .card-category {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #fff;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .card-desc {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 16px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .view-btn {
+      padding: 7px 16px;
+      border-radius: 8px;
+      background: rgba(59,130,246,0.15);
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
+      border: 1px solid rgba(59,130,246,0.25);
+    }
+    .view-btn:hover { background: var(--accent); color: #fff; }
+
+    .loading-state {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 80px 40px;
+      color: var(--muted);
+      font-size: 0.875rem;
+      grid-column: 1 / -1;
+    }
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 80px 40px;
+      color: var(--muted);
+    }
+    .empty-state .empty-icon { font-size: 3rem; margin-bottom: 16px; }
+    .empty-state p { font-size: 0.9rem; }
+
+    .toast {
+      position: fixed;
+      bottom: 28px; right: 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-size: 0.875rem;
+      color: var(--text);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 999;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-color: rgba(16,185,129,0.4); }
+    .toast.error   { border-color: rgba(239,68,68,0.4); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 20px; }
+      .filter-tabs { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="logo">Edu<span>Sphere</span></div>
+    <nav class="nav">
+      <a href="dashboard.html" class="nav-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a href="courses.html" class="nav-item active">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Courses
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Users
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Analytics
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 1 21 12a10 10 0 0 1-1.93 7.07"/><path d="M4.93 19.07A10 10 0 0 1 3 12a10 10 0 0 1 1.93-7.07"/></svg>
+        Settings
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="handleLogout()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Log Out
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1>Courses</h1>
+        <p>Browse and enroll in available courses</p>
+      </div>
+      <div class="user-chip">
+        <div class="avatar" id="topAvatar">?</div>
+        <span id="topName">Loading…</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="search-wrap">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="search-input" id="searchInput" type="text" placeholder="Search courses…" oninput="filterCourses()">
+      </div>
+      <div class="filter-tabs">
+        <button class="filter-tab active" onclick="setFilter('all', this)">All</button>
+        <button class="filter-tab" onclick="setFilter('python', this)">Python</button>
+        <button class="filter-tab" onclick="setFilter('web', this)">Web</button>
+        <button class="filter-tab" onclick="setFilter('data', this)">Data</button>
+        <button class="filter-tab" onclick="setFilter('cloud', this)">Cloud</button>
+        <button class="filter-tab" onclick="setFilter('ml', this)">ML</button>
+      </div>
+      <span class="results-count" id="resultsCount"></span>
+    </div>
+
+    <div class="courses-grid" id="coursesGrid">
+      <div class="loading-state"><div class="spinner"></div> Fetching courses…</div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const BASE_URL = "https://edusphere-api-func-f7c4fbgxgncweafs.centralindia-01.azurewebsites.net/api";
+
+    // Visual config keyed by course id from DB
+    const COURSE_VISUALS = {
+      1: { icon: '🐍', bg: 'linear-gradient(135deg,#1e3a2f,#134e37)', cat: 'Programming',    catColor: '#10b981' },
+      2: { icon: '🌐', bg: 'linear-gradient(135deg,#1a2a4a,#0d2060)', cat: 'Web Dev',         catColor: '#3b82f6' },
+      3: { icon: '🌳', bg: 'linear-gradient(135deg,#2d1b4e,#1a0f33)', cat: 'CS Fundamentals', catColor: '#a78bfa' },
+      4: { icon: '⚡', bg: 'linear-gradient(135deg,#2d1b4e,#1a0f33)', cat: 'CS Fundamentals', catColor: '#a78bfa' },
+      5: { icon: '💻', bg: 'linear-gradient(135deg,#1a2a4a,#0d2060)', cat: 'Web Dev',         catColor: '#3b82f6' },
+      6: { icon: '🤖', bg: 'linear-gradient(135deg,#1a3040,#0d2030)', cat: 'AI / ML',         catColor: '#06b6d4' },
+      7: { icon: '☁️', bg: 'linear-gradient(135deg,#1a2535,#0d1a2a)', cat: 'Cloud',           catColor: '#f59e0b' },
+      8: { icon: '🗄️', bg: 'linear-gradient(135deg,#2a1f1a,#1a1010)', cat: 'Database',        catColor: '#ef4444' },
+    };
+
+    function getVisual(id) {
+      return COURSE_VISUALS[id] || { icon: '📚', bg: 'linear-gradient(135deg,#1a2235,#0d1625)', cat: 'Course', catColor: '#64748b' };
+    }
+
+    let allCourses = [];
+    let activeFilter = 'all';
+
+    function initials(name) {
+      return name ? name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) : '?';
+    }
+
+    function loadUserProfile() {
+      const raw = sessionStorage.getItem('user') || localStorage.getItem('user');
+      const user = raw ? JSON.parse(raw) : { name: 'Student' };
+      const name = user.name || 'Student';
+      document.getElementById('topAvatar').textContent = initials(name);
+      document.getElementById('topName').textContent = name;
+    }
+
+    function showToast(msg, type = 'success') {
+      const t = document.getElementById('toast');
+      t.textContent = (type === 'success' ? '✅ ' : '❌ ') + msg;
+      t.className = `toast ${type} show`;
+      setTimeout(() => t.className = 'toast', 2800);
+    }
+
+    function setFilter(keyword, btn) {
+      activeFilter = keyword;
+      document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filterCourses();
+    }
+
+    function filterCourses() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = allCourses.filter(c => {
+        // API returns c.name and c.description (mapped from title in getCourses/index.js)
+        const title = (c.name || '').toLowerCase();
+        const desc  = (c.description || '').toLowerCase();
+        const matchSearch = title.includes(query) || desc.includes(query);
+        const matchFilter = activeFilter === 'all' || title.includes(activeFilter) || desc.includes(activeFilter);
+        return matchSearch && matchFilter;
+      });
+      renderCourses(filtered);
+    }
+
+    function renderCourses(courses) {
+      const grid = document.getElementById('coursesGrid');
+      document.getElementById('resultsCount').textContent = `${courses.length} course${courses.length !== 1 ? 's' : ''}`;
+
+      if (courses.length === 0) {
+        grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><p>No courses match your search.</p></div>`;
+        return;
+      }
+
+      grid.innerHTML = courses.map((c, i) => {
+        // c.id, c.name, c.description come from the API
+        const v = getVisual(c.id);
+        return `
+          <div class="course-card" style="animation-delay:${i * 0.06}s" onclick="goToCourse(${c.id})">
+            <div class="card-banner" style="background:${v.bg}">${v.icon}</div>
+            <div class="card-body">
+              <div class="card-category" style="color:${v.catColor}">${v.cat}</div>
+              <div class="card-title">${c.name}</div>
+              <div class="card-desc">${c.description || 'No description available.'}</div>
+              <div class="card-footer">
+                <div class="card-meta">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  Self-paced
+                </div>
+                <button class="view-btn" onclick="event.stopPropagation(); goToCourse(${c.id})">
+                  View Course →
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function goToCourse(courseId) {
+      window.location.href = `course-detail.html?courseId=${courseId}`;
+    }
+
+    async function loadCourses() {
+      try {
+        const res = await fetch(`${BASE_URL}/getCourses`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        allCourses = data.courses || [];
+        filterCourses();
+      } catch (err) {
+        console.error('getCourses failed:', err);
+        document.getElementById('coursesGrid').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">⚠️</div>
+            <p>Could not load courses. Please try again later.</p>
+          </div>`;
+      }
+    }
+
+    function handleLogout() {
+      sessionStorage.clear();
+      localStorage.removeItem('user');
+      window.location.href = 'index.html';
+    }
+
+    loadUserProfile();
+    loadCourses();
+  </script>
+</body>
+</html>

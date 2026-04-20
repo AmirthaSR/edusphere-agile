@@ -381,124 +381,180 @@
   <script>
     const BASE_URL = "https://edusphere-api-func-f7c4fbgxgncweafs.centralindia-01.azurewebsites.net/api";
 
-    const params   = new URLSearchParams(window.location.search);
-    const courseId = params.get('courseId') || 1;
+const params   = new URLSearchParams(window.location.search);
+const courseId = params.get('courseId') || 1;
 
-    function getUserId() {
-      const raw = sessionStorage.getItem('user') || localStorage.getItem('user');
-      const user = raw ? JSON.parse(raw) : null;
-      return user ? user.user_id || user.id || 1 : 1;
+function getUserId() {
+  const raw = sessionStorage.getItem('user') || localStorage.getItem('user');
+  const user = raw ? JSON.parse(raw) : null;
+  return user ? user.user_id || user.id || 1 : 1;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function handleLogout() {
+  sessionStorage.clear();
+  localStorage.removeItem('user');
+  window.location.href = 'index.html';
+}
+
+async function enrollInCourse(userId, courseId, btn) {
+  btn.disabled = true;
+  btn.textContent = 'Enrolling…';
+  try {
+    const res = await fetch(`${BASE_URL}/enrollCourse`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, courseId })
+    });
+    const data = await res.json();
+
+    if (res.status === 409) {
+      showToast('ℹ️ Already enrolled!');
+      btn.textContent = '✓ Enrolled';
+      btn.style.background = 'rgba(16,185,129,0.15)';
+      btn.style.color = 'var(--success)';
+      return;
     }
 
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 3000);
+    if (!res.ok) throw new Error(data.error || 'Enroll failed');
+
+    btn.textContent = '✓ Enrolled';
+    btn.style.background = 'rgba(16,185,129,0.15)';
+    btn.style.color = 'var(--success)';
+    showToast('🎉 Successfully enrolled!');
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Enroll Now';
+    showToast('❌ Could not enroll. Try again.');
+  }
+}
+
+async function markComplete(userId, courseId, lessonId, btn) {
+  btn.disabled = true;
+  btn.textContent = '…';
+  try {
+    const res = await fetch(`${BASE_URL}/updateProgress`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, courseId, lessonId })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    btn.textContent = '✓ Done';
+    btn.className = 'lesson-action done';
+    btn.closest('.lesson-item').classList.add('completed');
+    btn.closest('.lesson-item').querySelector('.lesson-number').textContent = '✓';
+
+    const fill  = document.getElementById('progressFill');
+    const label = document.getElementById('progressLabel');
+    if (fill && data.progress !== undefined) {
+      fill.style.width  = data.progress + '%';
+      label.textContent = data.progress + '% complete';
     }
 
-    function handleLogout() {
-      sessionStorage.clear();
-      localStorage.removeItem('user');
-      window.location.href = 'index.html';
-    }
+    showToast('✅ Lesson marked as complete!');
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Mark Done';
+    showToast('❌ Could not update progress. Try again.');
+  }
+}
 
-    async function markComplete(userId, courseId, lessonId, btn) {
-      btn.disabled = true;
-      btn.textContent = '…';
-      try {
-        const res = await fetch(`${BASE_URL}/updateProgress`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, courseId, lessonId })
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
+async function loadCourseDetail() {
+  try {
+    const userId = getUserId();
 
-        btn.textContent = '✓ Done';
-        btn.className = 'lesson-action done';
-        btn.closest('.lesson-item').classList.add('completed');
-        btn.closest('.lesson-item').querySelector('.lesson-number').textContent = '✓';
+    const res = await fetch(`${BASE_URL}/getCourseDetails?courseId=${courseId}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const course  = data.course;
+    const lessons = data.lessons || [];
 
-        // Update progress bar
-        const fill = document.getElementById('progressFill');
-        const label = document.getElementById('progressLabel');
-        if (fill && data.progress !== undefined) {
-          fill.style.width = data.progress + '%';
-          label.textContent = data.progress + '% complete';
-        }
+    // Fetch which lessons user already completed
+    let completedLessonIds = [];
+    try {
+      const progRes = await fetch(`${BASE_URL}/getUserStats?userId=${userId}`);
+      const progData = await progRes.json();
+      completedLessonIds = progData.completedLessonIds || [];
+    } catch (_) {}
 
-        showToast('✅ Lesson marked as complete!');
-      } catch (err) {
-        btn.disabled = false;
-        btn.textContent = 'Mark Done';
-        showToast('❌ Could not update progress. Try again.');
-      }
-    }
+    const completedCount = completedLessonIds.length;
+    const totalLessons   = lessons.length;
+    const progressPct    = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
-    async function loadCourseDetail() {
-      try {
-        const res = await fetch(`${BASE_URL}/getCourseDetails?courseId=${courseId}`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        const course  = data.course;
-        const lessons = data.lessons || [];
-        const userId  = getUserId();
-
-        // Render course header
-        document.getElementById('courseHeader').innerHTML = `
-          <div class="course-icon-lg">📚</div>
-          <div class="course-header-info">
-            <h1>${course.title}</h1>
-            <p>${course.description}</p>
-            <div class="course-meta-chips">
-              <span class="chip accent">${lessons.length} Lessons</span>
-              <span class="chip">Self-paced</span>
-              <span class="chip">Certificate on completion</span>
-            </div>
-            <div class="overall-progress">
-              <div class="progress-header">
-                <span>Overall Progress</span>
-                <span id="progressLabel">0% complete</span>
-              </div>
-              <div class="progress-bar">
-                <div class="progress-fill" id="progressFill" style="width:0%"></div>
-              </div>
-            </div>
+    // Render course header
+    document.getElementById('courseHeader').innerHTML = `
+      <div class="course-icon-lg">📚</div>
+      <div class="course-header-info">
+        <h1>${course.title}</h1>
+        <p>${course.description}</p>
+        <div class="course-meta-chips">
+          <span class="chip accent">${lessons.length} Lessons</span>
+          <span class="chip">Self-paced</span>
+          <span class="chip">Certificate on completion</span>
+        </div>
+        <div class="overall-progress">
+          <div class="progress-header">
+            <span>Overall Progress</span>
+            <span id="progressLabel">${progressPct}% complete</span>
           </div>
-        `;
-
-        // Render lessons
-        const list = document.getElementById('lessonsList');
-        if (lessons.length === 0) {
-          list.innerHTML = '<div class="loading-state">No lessons found for this course.</div>';
-          return;
-        }
-
-        list.innerHTML = lessons.map((lesson, i) => `
-          <div class="lesson-item" id="lesson-${lesson.lesson_id}">
-            <div class="lesson-number">${i + 1}</div>
-            <div class="lesson-info">
-              <div class="lesson-title">${lesson.title}</div>
-              <div class="lesson-content">${lesson.content}</div>
-            </div>
-            <button 
-              class="lesson-action start" 
-              onclick="markComplete(${userId}, ${courseId}, ${lesson.lesson_id}, this)">
-              Mark Done
-            </button>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width:${progressPct}%"></div>
           </div>
-        `).join('');
+        </div>
+        <div style="margin-top:16px">
+          <button 
+            class="lesson-action start" 
+            style="padding:10px 24px;font-size:0.85rem;"
+            onclick="enrollInCourse(${userId}, ${courseId}, this)">
+            Enroll Now
+          </button>
+        </div>
+      </div>
+    `;
 
-      } catch (err) {
-        document.getElementById('courseHeader').innerHTML = `
-          <div class="loading-state">❌ Could not load course. <a href="dashboard.html" style="color:var(--accent);margin-left:8px">Go back</a></div>
-        `;
-        document.getElementById('lessonsList').innerHTML = '';
-      }
+    // Render lessons
+    const list = document.getElementById('lessonsList');
+    if (lessons.length === 0) {
+      list.innerHTML = '<div class="loading-state">No lessons found for this course.</div>';
+      return;
     }
 
-    loadCourseDetail();
+    list.innerHTML = lessons.map((lesson, i) => {
+      const isDone = completedLessonIds.includes(lesson.lesson_id);
+      return `
+        <div class="lesson-item ${isDone ? 'completed' : ''}" id="lesson-${lesson.lesson_id}">
+          <div class="lesson-number">${isDone ? '✓' : i + 1}</div>
+          <div class="lesson-info">
+            <div class="lesson-title">${lesson.title}</div>
+            <div class="lesson-content">${lesson.content}</div>
+          </div>
+          <button 
+            class="lesson-action ${isDone ? 'done' : 'start'}" 
+            ${isDone ? 'disabled' : ''}
+            onclick="markComplete(${userId}, ${courseId}, ${lesson.lesson_id}, this)">
+            ${isDone ? '✓ Done' : 'Mark Done'}
+          </button>
+        </div>
+      `;
+    }).join('');
+
+  } catch (err) {
+    document.getElementById('courseHeader').innerHTML = `
+      <div class="loading-state">❌ Could not load course. <a href="dashboard.html" style="color:var(--accent);margin-left:8px">Go back</a></div>
+    `;
+    document.getElementById('lessonsList').innerHTML = '';
+  }
+}
+
+loadCourseDetail();
   </script>
 </body>
 </html>
