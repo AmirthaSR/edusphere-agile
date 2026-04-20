@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EduSphere — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #080d18;
+      --surface: #0f1724;
+      --surface2: #162035;
+      --surface3: #1c2a42;
+      --border: #1e2e48;
+      --border2: #253550;
+      --accent: #4f8ef7;
+      --accent2: #18d4f0;
+      --accent-dim: rgba(79,142,247,0.15);
+      --gold: #f5a623;
+      --success: #16c98d;
+      --danger: #f05252;
+      --text: #e8edf5;
+      --text2: #a8b8d0;
+      --muted: #4f6a8a;
+      --glow-blue: 0 0 40px rgba(79,142,247,0.12);
+      --glow-cyan: 0 0 40px rgba(24,212,240,0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Subtle grid + ambient glow background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(79,142,247,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79,142,247,0.04) 1px, transparent 1px);
+      background-size: 52px 52px;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      top: -200px; left: -200px;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(79,142,247,0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      width: 240px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 28px 16px;
+      z-index: 100;
+      animation: slideInLeft 0.45s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes slideInLeft {
+      from { transform: translateX(-100%); opacity: 0; }
+      to   { transform: translateX(0);    opacity: 1; }
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.45rem;
+      color: #fff;
+      margin-bottom: 36px;
+      padding: 0 10px;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 12px rgba(79,142,247,0.8);
+      flex-shrink: 0;
+    }
+    .logo span { color: var(--accent); }
+
+    .nav-section-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0 12px;
+      margin: 16px 0 8px;
+    }
+
+    .nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      color: var(--text2);
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.18s ease;
+      border: 1px solid transparent;
+      text-decoration: none;
+      position: relative;
+    }
+    .nav-item:hover {
+      color: var(--text);
+      background: var(--surface2);
+      border-color: var(--border);
+    }
+    .nav-item.active {
+      color: var(--accent);
+      background: rgba(79,142,247,0.1);
+      border-color: rgba(79,142,247,0.22);
+    }
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: -16px; top: 50%;
+      transform: translateY(-50%);
+      width: 3px; height: 20px;
+      background: var(--accent);
+      border-radius: 0 3px 3px 0;
+    }
+    .nav-item svg { flex-shrink: 0; opacity: 0.85; }
+    .nav-item.active svg { opacity: 1; }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 20px;
+    }
+
+    .sidebar-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+      margin-top: 8px;
+    }
+
+    .user-mini {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+    }
+    .user-mini-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700; font-size: 0.75rem; color: #fff;
+      flex-shrink: 0;
+    }
+    .user-mini-info { flex: 1; min-width: 0; }
+    .user-mini-name {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .user-mini-role { font-size: 0.68rem; color: var(--muted); }
+
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 0.85rem;
+      transition: all 0.18s;
+      border: none;
+      background: none;
+      width: 100%;
+      font-family: inherit;
+    }
+    .logout-btn:hover { color: var(--danger); background: rgba(240,82,82,0.08); }
+
+    /* ── MAIN ── */
+    .main {
+      margin-left: 240px;
+      padding: 32px 36px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      animation: fadeUp 0.5s 0.05s ease both;
+    }
+    .topbar-left h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.3px;
+    }
+    .topbar-left p { color: var(--text2); font-size: 0.875rem; margin-top: 3px; }
+
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+    .icon-btn {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: var(--text2);
+      transition: all 0.18s;
+    }
+    .icon-btn:hover { border-color: var(--border2); color: var(--text); }
+
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 6px 16px 6px 6px;
+      cursor: pointer;
+      transition: border-color 0.18s;
+    }
+    .user-chip:hover { border-color: var(--border2); }
+    .avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700; font-size: 0.8rem; color: #fff;
+      box-shadow: 0 0 14px rgba(79,142,247,0.35);
+    }
+    .user-chip-name { font-size: 0.85rem; font-weight: 500; color: var(--text); }
+
+    /* ── STATS ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease both;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+    .stat-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border2);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    .stat-card:nth-child(1) { animation-delay: 0.1s; }
+    .stat-card:nth-child(2) { animation-delay: 0.15s; }
+    .stat-card:nth-child(3) { animation-delay: 0.2s; }
+    .stat-card:nth-child(4) { animation-delay: 0.25s; }
+
+    .stat-card-glow {
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      opacity: 0.12;
+      pointer-events: none;
+    }
+    .stat-card.blue .stat-card-glow  { background: var(--accent); }
+    .stat-card.cyan .stat-card-glow  { background: var(--accent2); }
+    .stat-card.gold .stat-card-glow  { background: var(--gold); }
+    .stat-card.green .stat-card-glow { background: var(--success); }
+
+    .stat-card.blue:hover  { border-color: rgba(79,142,247,0.4);  box-shadow: 0 8px 32px rgba(79,142,247,0.1); }
+    .stat-card.cyan:hover  { border-color: rgba(24,212,240,0.4);  box-shadow: 0 8px 32px rgba(24,212,240,0.08); }
+    .stat-card.gold:hover  { border-color: rgba(245,166,35,0.4);  box-shadow: 0 8px 32px rgba(245,166,35,0.08); }
+    .stat-card.green:hover { border-color: rgba(22,201,141,0.4);  box-shadow: 0 8px 32px rgba(22,201,141,0.08); }
+
+    .stat-icon {
+      width: 42px; height: 42px;
+      border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 18px;
+      font-size: 1.15rem;
+    }
+    .blue  .stat-icon { background: rgba(79,142,247,0.15);  color: var(--accent); }
+    .cyan  .stat-icon { background: rgba(24,212,240,0.15);  color: var(--accent2); }
+    .gold  .stat-icon { background: rgba(245,166,35,0.15);  color: var(--gold); }
+    .green .stat-icon { background: rgba(22,201,141,0.15);  color: var(--success); }
+
+    .stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+    .stat-label { color: var(--text2); font-size: 0.8rem; margin-top: 6px; }
+    .stat-change {
+      font-size: 0.73rem;
+      margin-top: 12px;
+      display: flex; align-items: center; gap: 4px;
+      font-weight: 500;
+    }
+    .stat-change.up   { color: var(--success); }
+    .stat-change.down { color: var(--danger); }
+
+    /* ── BOTTOM GRID ── */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 18px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      animation: fadeUp 0.5s 0.3s ease both;
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .panel-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #fff;
+    }
+    .panel-badge {
+      font-size: 0.71rem;
+      font-weight: 600;
+      background: rgba(79,142,247,0.12);
+      color: var(--accent);
+      border: 1px solid rgba(79,142,247,0.22);
+      border-radius: 20px;
+      padding: 3px 10px;
+    }
+
+    /* Course list */
+    .course-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .course-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px;
+      border-radius: 12px;
+      background: var(--surface2);
+      border: 1px solid transparent;
+      transition: all 0.18s;
+      cursor: pointer;
+    }
+    .course-item:hover {
+      border-color: var(--border2);
+      background: var(--surface3);
+      transform: translateX(3px);
+    }
+
+    .course-icon {
+      width: 42px; height: 42px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .course-info { flex: 1; min-width: 0; }
+    .course-name {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .course-meta { font-size: 0.73rem; color: var(--muted); margin-top: 3px; }
+
+    .progress-wrap { width: 90px; flex-shrink: 0; }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+    .progress-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width 1s cubic-bezier(0.22,1,0.36,1);
+    }
+
+    /* Activity */
+    .activity-list { display: flex; flex-direction: column; }
+    .activity-item {
+      display: flex;
+      gap: 12px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-dot {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+    .activity-content { flex: 1; }
+    .activity-text { font-size: 0.84rem; color: var(--text2); line-height: 1.4; }
+    .activity-text strong { color: var(--text); font-weight: 600; }
+    .activity-time { font-size: 0.7rem; color: var(--muted); margin-top: 3px; }
+
+    /* Profile card */
+    .profile-card {
+      background: linear-gradient(135deg, rgba(79,142,247,0.1), rgba(24,212,240,0.05));
+      border: 1px solid rgba(79,142,247,0.2);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 16px;
+      animation: fadeUp 0.5s 0.35s ease both;
+      position: relative;
+      overflow: hidden;
+    }
+    .profile-card::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(79,142,247,0.15), transparent 70%);
+      pointer-events: none;
+    }
+    .profile-avatar {
+      width: 68px; height: 68px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem; font-weight: 800; color: #fff;
+      margin: 0 auto 14px;
+      box-shadow: 0 0 0 4px rgba(79,142,247,0.2), 0 0 30px rgba(79,142,247,0.3);
+    }
+    .profile-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .profile-email { font-size: 0.78rem; color: var(--text2); margin-top: 4px; }
+    .profile-role {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      background: rgba(245,166,35,0.15);
+      color: var(--gold);
+      border: 1px solid rgba(245,166,35,0.28);
+      border-radius: 20px;
+      padding: 3px 12px;
+    }
+    .profile-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .p-stat {
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+    }
+    .p-stat-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+    }
+    .p-stat-lbl { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+
+    /* Loading / error */
+    .loading-state {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 40px;
+      color: var(--muted);
+      font-size: 0.875rem;
+    }
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid var(--border2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-banner {
+      background: rgba(240,82,82,0.08);
+      border: 1px solid rgba(240,82,82,0.25);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: #fca5a5;
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 1100px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .bottom-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 20px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      Edu<span>Sphere</span>
+    </div>
+
+    <nav class="nav">
+      <div class="nav-section-label">Main</div>
+
+      <a href="dashboard.html" class="nav-item active">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </a>
+
+      <a href="courses.html" class="nav-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Courses
+        <span class="nav-badge">8</span>
+      </a>
+
+      <div class="nav-section-label">Manage</div>
+
+      <a href="#" class="nav-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Users
+      </a>
+
+      <a href="#" class="nav-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Analytics
+      </a>
+
+      <a href="#" class="nav-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 1 21 12a10 10 0 0 1-1.93 7.07"/><path d="M4.93 19.07A10 10 0 0 1 3 12a10 10 0 0 1 1.93-7.07"/></svg>
+        Settings
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-mini">
+        <div class="user-mini-avatar" id="sidebarAvatar">?</div>
+        <div class="user-mini-info">
+          <div class="user-mini-name" id="sidebarName">Loading…</div>
+          <div class="user-mini-role">Student</div>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="handleLogout()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Log Out
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1>Dashboard</h1>
+        <p id="greeting">Welcome back…</p>
+      </div>
+      <div class="topbar-right">
+        <div class="icon-btn" title="Notifications">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </div>
+        <div class="user-chip">
+          <div class="avatar" id="topAvatar">?</div>
+          <span class="user-chip-name" id="topName">Loading…</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="error-banner" id="errorBanner"></div>
+
+    <div class="stats-grid">
+      <div class="stat-card blue">
+        <div class="stat-card-glow"></div>
+        <div class="stat-icon">👥</div>
+        <div class="stat-value" id="statUsers">—</div>
+        <div class="stat-label">Total Users</div>
+        <div class="stat-change up" id="statUsersChange">↑ Loading…</div>
+      </div>
+      <div class="stat-card cyan">
+        <div class="stat-card-glow"></div>
+        <div class="stat-icon">📚</div>
+        <div class="stat-value" id="statCourses">—</div>
+        <div class="stat-label">Active Courses</div>
+        <div class="stat-change up">↑ 8 available</div>
+      </div>
+      <div class="stat-card gold">
+        <div class="stat-card-glow"></div>
+        <div class="stat-icon">🏆</div>
+        <div class="stat-value" id="statCompleted">—</div>
+        <div class="stat-label">Completions</div>
+        <div class="stat-change up">↑ 12% this month</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-card-glow"></div>
+        <div class="stat-icon">⚡</div>
+        <div class="stat-value" id="statActive">—</div>
+        <div class="stat-label">Avg Progress</div>
+        <div class="stat-change up">↑ Live</div>
+      </div>
+    </div>
+
+    <div class="bottom-grid">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Course Progress</span>
+          <span class="panel-badge" id="courseCount">Loading…</span>
+        </div>
+        <div class="course-list" id="courseList">
+          <div class="loading-state"><div class="spinner"></div> Fetching courses…</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="profile-card">
+          <div class="profile-avatar" id="profileAvatar">?</div>
+          <div class="profile-name" id="profileName">Loading…</div>
+          <div class="profile-email" id="profileEmail">—</div>
+          <span class="profile-role">Student</span>
+          <div class="profile-stats">
+            <div class="p-stat">
+              <div class="p-stat-val" id="pStatCourses">—</div>
+              <div class="p-stat-lbl">Enrolled</div>
+            </div>
+            <div class="p-stat">
+              <div class="p-stat-val" id="pStatProgress">—%</div>
+              <div class="p-stat-lbl">Avg Progress</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" style="animation-delay:0.4s">
+          <div class="panel-header">
+            <span class="panel-title">Recent Activity</span>
+          </div>
+          <div class="activity-list" id="activityList">
+            <div class="loading-state"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const BASE_URL = "https://edusphere-api-func-f7c4fbgxgncweafs.centralindia-01.azurewebsites.net/api";
+
+    const COURSE_ICONS = {
+      1: { icon: '🐍', bg: '#1a3a2a' },
+      2: { icon: '🌐', bg: '#1a2a4a' },
+      3: { icon: '🌳', bg: '#2a1a4a' },
+      4: { icon: '⚡', bg: '#2a1a4a' },
+      5: { icon: '💻', bg: '#1a2a4a' },
+      6: { icon: '🤖', bg: '#1a3040' },
+      7: { icon: '☁️', bg: '#1a2535' },
+      8: { icon: '🗄️', bg: '#2a1f1a' },
+    };
+
+    const MOCK_ACTIVITY = [
+      { icon: "✅", bg: "rgba(22,201,141,0.15)", color: "#16c98d", text: "<strong>Completed</strong> Module 3 — Web Dev", time: "2 hours ago" },
+      { icon: "🏅", bg: "rgba(245,166,35,0.15)",  color: "#f5a623", text: "<strong>Earned badge:</strong> Fast Learner", time: "5 hours ago" },
+      { icon: "📖", bg: "rgba(79,142,247,0.15)",  color: "#4f8ef7", text: "<strong>Started</strong> ML Basics — Intro to Neural Nets", time: "Yesterday" },
+      { icon: "💬", bg: "rgba(24,212,240,0.15)",  color: "#18d4f0", text: "<strong>Commented</strong> on DSA — Binary Trees", time: "2 days ago" },
+    ];
+
+    function initials(name) {
+      return name ? name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2) : '?';
+    }
+
+    function showError(msg) {
+      const b = document.getElementById('errorBanner');
+      b.textContent = '⚠ ' + msg;
+      b.style.display = 'block';
+    }
+
+    function getUserId() {
+      const raw = sessionStorage.getItem('user') || localStorage.getItem('user');
+      const user = raw ? JSON.parse(raw) : null;
+      return user ? user.user_id || user.id || 1 : 1;
+    }
+
+    function loadUserProfile() {
+      const raw = sessionStorage.getItem('user') || localStorage.getItem('user');
+      const user = raw ? JSON.parse(raw) : { name: 'Student', email: 'student@edusphere.com' };
+      const name  = user.name  || 'Student';
+      const email = user.email || '—';
+      const ini   = initials(name);
+
+      document.getElementById('topAvatar').textContent       = ini;
+      document.getElementById('topName').textContent         = name;
+      document.getElementById('profileAvatar').textContent   = ini;
+      document.getElementById('profileName').textContent     = name;
+      document.getElementById('profileEmail').textContent    = email;
+      document.getElementById('sidebarAvatar').textContent   = ini;
+      document.getElementById('sidebarName').textContent     = name;
+
+      const hour = new Date().getHours();
+      const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+      document.getElementById('greeting').textContent = `${greet}, ${name.split(' ')[0]} 👋`;
+    }
+
+    async function loadUserStats() {
+      try {
+        const userId = getUserId();
+        const res = await fetch(`${BASE_URL}/getUserStats?userId=${userId}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        document.getElementById('statCourses').textContent   = data.totalCourses ?? '—';
+        document.getElementById('statCompleted').textContent = data.completedLessons ?? '—';
+        document.getElementById('statActive').textContent    = (data.avgProgress ?? '—') + '%';
+        document.getElementById('pStatCourses').textContent  = data.totalCourses ?? '—';
+        document.getElementById('pStatProgress').textContent = (data.avgProgress ?? '—') + '%';
+        document.getElementById('courseCount').textContent   = `${data.totalCourses ?? 0} enrolled`;
+      } catch (err) {
+        console.warn('getUserStats failed:', err.message);
+        showError('Could not load user stats. Check your network or API.');
+      }
+    }
+
+    async function loadAllUsers() {
+      try {
+        const res = await fetch(`${BASE_URL}/getAllUsers`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const count = (data.users || []).length;
+        document.getElementById('statUsers').textContent       = count;
+        document.getElementById('statUsersChange').textContent = `↑ ${count} registered`;
+      } catch (err) {
+        document.getElementById('statUsers').textContent       = '—';
+        document.getElementById('statUsersChange').textContent = 'Could not load';
+      }
+    }
+
+    async function loadCourses() {
+      try {
+        const res = await fetch(`${BASE_URL}/getCourses`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const courses = data.courses || [];
+
+        const list = document.getElementById('courseList');
+        list.innerHTML = courses.map(c => {
+          const v = COURSE_ICONS[c.id] || { icon: '📚', bg: '#1a2235' };
+          return `
+            <div class="course-item" onclick="window.location.href='course-detail.html?courseId=${c.id}'">
+              <div class="course-icon" style="background:${v.bg}">${v.icon}</div>
+              <div class="course-info">
+                <div class="course-name">${c.name}</div>
+                <div class="course-meta">${c.description || 'General'}</div>
+              </div>
+              <div class="progress-wrap">
+                <div class="progress-label"><span>Progress</span><span>${c.progress || 0}%</span></div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width:0%" data-width="${c.progress || 0}%"></div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        requestAnimationFrame(() => {
+          document.querySelectorAll('.progress-fill').forEach(el => {
+            el.style.width = el.dataset.width;
+          });
+        });
+
+        if (!document.getElementById('courseCount').textContent.includes('enrolled')) {
+          document.getElementById('courseCount').textContent = `${courses.length} courses`;
+        }
+      } catch (err) {
+        console.warn('getCourses failed:', err.message);
+        document.getElementById('courseList').innerHTML = '<div class="loading-state">Could not load courses.</div>';
+      }
+    }
+
+    function renderActivity() {
+      document.getElementById('activityList').innerHTML = MOCK_ACTIVITY.map(a => `
+        <div class="activity-item">
+          <div class="activity-dot" style="background:${a.bg};color:${a.color}">${a.icon}</div>
+          <div class="activity-content">
+            <div class="activity-text">${a.text}</div>
+            <div class="activity-time">${a.time}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function handleLogout() {
+      sessionStorage.clear();
+      localStorage.removeItem('user');
+      window.location.href = 'index.html';
+    }
+
+    (async () => {
+      loadUserProfile();
+      renderActivity();
+      await Promise.all([loadCourses(), loadUserStats(), loadAllUsers()]);
+    })();
+  </script>
+</body>
+</html>
