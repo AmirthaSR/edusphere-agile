@@ -16,21 +16,19 @@ module.exports = async function (context, req) {
       return;
     }
 
-    await sql.connect(config);
+    const pool = await sql.connect(config);
 
-    const enrollResult = await sql.query`
-      SELECT COUNT(*) AS totalCourses FROM Enrollments WHERE user_id = ${userId}
-    `;
+    const enrollResult = await pool.request()
+      .input('userId', sql.Int, userId)
+      .query('SELECT COUNT(*) AS totalCourses FROM Enrollments WHERE user_id = @userId');
 
-    const progressResult = await sql.query`
-      SELECT AVG(CAST(progress AS FLOAT)) AS avgProgress 
-      FROM Enrollments WHERE user_id = ${userId}
-    `;
+    const progressResult = await pool.request()
+      .input('userId', sql.Int, userId)
+      .query('SELECT AVG(CAST(progress AS FLOAT)) AS avgProgress FROM Enrollments WHERE user_id = @userId');
 
-    const lessonsResult = await sql.query`
-      SELECT COUNT(*) AS completedLessons 
-      FROM progress WHERE user_id = ${userId} AND completed = 1
-    `;
+    const completedResult = await pool.request()
+      .input('userId', sql.Int, userId)
+      .query('SELECT COUNT(*) AS completedLessons FROM progress WHERE user_id = @userId AND completed = 1');
 
     context.res = {
       status: 200,
@@ -41,13 +39,14 @@ module.exports = async function (context, req) {
       body: {
         totalCourses: enrollResult.recordset[0].totalCourses,
         avgProgress: Math.round(progressResult.recordset[0].avgProgress || 0),
-        completedLessons: lessonsResult.recordset[0].completedLessons
+        completedLessons: completedResult.recordset[0].completedLessons
       }
     };
   } catch (err) {
+    context.log('getUserStats error:', err.message);
     context.res = {
       status: 500,
       body: { error: err.message }
     };
   }
-};
+}

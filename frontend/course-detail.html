@@ -7,334 +7,111 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --bg: #0a0e1a;
-      --surface: #111827;
-      --surface2: #1a2235;
-      --border: #1f2d45;
-      --accent: #3b82f6;
-      --accent2: #06b6d4;
-      --gold: #f59e0b;
-      --success: #10b981;
-      --danger: #ef4444;
-      --text: #e2e8f0;
-      --muted: #64748b;
+      --bg: #0a0e1a; --surface: #111827; --surface2: #1a2235;
+      --border: #1f2d45; --accent: #3b82f6; --accent2: #06b6d4;
+      --gold: #f59e0b; --success: #10b981; --danger: #ef4444;
+      --text: #e2e8f0; --muted: #64748b;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
     body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
-      background-size: 48px 48px;
-      pointer-events: none;
-      z-index: 0;
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+      background-size: 48px 48px; pointer-events: none; z-index: 0;
     }
-
     .sidebar {
-      position: fixed;
-      left: 0; top: 0; bottom: 0;
-      width: 230px;
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      padding: 28px 20px;
-      z-index: 100;
+      position: fixed; left: 0; top: 0; bottom: 0; width: 230px;
+      background: var(--surface); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; padding: 28px 20px; z-index: 100;
     }
-
-    .logo {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 1.4rem;
-      color: #fff;
-      margin-bottom: 40px;
-    }
+    .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; color: #fff; margin-bottom: 40px; }
     .logo span { color: var(--accent); }
-
     .nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
-
     .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
-      border-radius: 10px;
-      cursor: pointer;
-      color: var(--muted);
-      font-size: 0.875rem;
-      font-weight: 500;
-      transition: all 0.2s;
-      border: 1px solid transparent;
-      text-decoration: none;
+      display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+      border-radius: 10px; cursor: pointer; color: var(--muted);
+      font-size: 0.875rem; font-weight: 500; transition: all 0.2s;
+      border: 1px solid transparent; text-decoration: none;
     }
     .nav-item:hover { color: var(--text); background: var(--surface2); }
-    .nav-item.active {
-      color: var(--accent);
-      background: rgba(59,130,246,0.1);
-      border-color: rgba(59,130,246,0.2);
-    }
-
-    .sidebar-footer {
-      border-top: 1px solid var(--border);
-      padding-top: 20px;
-    }
-
+    .nav-item.active { color: var(--accent); background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.2); }
+    .sidebar-footer { border-top: 1px solid var(--border); padding-top: 20px; }
     .logout-btn {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
-      border-radius: 10px;
-      cursor: pointer;
-      color: var(--muted);
-      font-size: 0.875rem;
-      transition: all 0.2s;
-      border: none;
-      background: none;
-      width: 100%;
-      font-family: inherit;
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      border-radius: 10px; cursor: pointer; color: var(--muted); font-size: 0.875rem;
+      transition: all 0.2s; border: none; background: none; width: 100%; font-family: inherit;
     }
     .logout-btn:hover { color: var(--danger); background: rgba(239,68,68,0.08); }
-
-    .main {
-      margin-left: 230px;
-      padding: 32px 36px;
-      position: relative;
-      z-index: 1;
-    }
-
+    .main { margin-left: 230px; padding: 32px 36px; position: relative; z-index: 1; }
     .back-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--muted);
-      font-size: 0.875rem;
-      cursor: pointer;
-      margin-bottom: 24px;
-      transition: color 0.2s;
-      background: none;
-      border: none;
-      font-family: inherit;
+      display: inline-flex; align-items: center; gap: 8px; color: var(--muted);
+      font-size: 0.875rem; cursor: pointer; margin-bottom: 24px; transition: color 0.2s;
+      background: none; border: none; font-family: inherit;
     }
     .back-btn:hover { color: var(--text); }
-
     .course-header {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 32px;
-      margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      gap: 24px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+      padding: 32px; margin-bottom: 24px; display: flex; align-items: center; gap: 24px;
       animation: fadeUp 0.5s ease both;
     }
-
     .course-icon-lg {
-      width: 72px; height: 72px;
-      border-radius: 16px;
-      background: rgba(59,130,246,0.15);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2rem;
-      flex-shrink: 0;
+      width: 72px; height: 72px; border-radius: 16px;
+      background: rgba(59,130,246,0.15); display: flex; align-items: center;
+      justify-content: center; font-size: 2rem; flex-shrink: 0;
     }
-
     .course-header-info { flex: 1; }
-    .course-header-info h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: #fff;
-      margin-bottom: 8px;
-    }
-    .course-header-info p {
-      color: var(--muted);
-      font-size: 0.9rem;
-      line-height: 1.6;
-    }
-
-    .course-meta-chips {
-      display: flex;
-      gap: 10px;
-      margin-top: 14px;
-      flex-wrap: wrap;
-    }
-    .chip {
-      font-size: 0.75rem;
-      padding: 4px 12px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      background: var(--surface2);
-    }
-    .chip.accent {
-      background: rgba(59,130,246,0.1);
-      color: var(--accent);
-      border-color: rgba(59,130,246,0.25);
-    }
-
-    .overall-progress {
-      margin-top: 20px;
-    }
-    .progress-header {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-    .progress-bar {
-      height: 8px;
-      background: var(--border);
-      border-radius: 99px;
-      overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%;
-      border-radius: 99px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      transition: width 1s ease;
-    }
-
-    .lessons-panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 28px;
-      animation: fadeUp 0.5s 0.15s ease both;
-    }
-
-    .lessons-panel h2 {
-      font-family: 'Syne', sans-serif;
-      font-size: 1rem;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 20px;
-    }
-
+    .course-header-info h1 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; margin-bottom: 8px; }
+    .course-header-info p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+    .course-meta-chips { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+    .chip { font-size: 0.75rem; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border); color: var(--muted); background: var(--surface2); }
+    .chip.accent { background: rgba(59,130,246,0.1); color: var(--accent); border-color: rgba(59,130,246,0.25); }
+    .overall-progress { margin-top: 20px; }
+    .progress-header { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--muted); margin-bottom: 8px; }
+    .progress-bar { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 1s ease; }
+    .lessons-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px; animation: fadeUp 0.5s 0.15s ease both; }
+    .lessons-panel h2 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 20px; }
     .lesson-item {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 16px;
-      border-radius: 12px;
-      background: var(--surface2);
-      border: 1px solid transparent;
-      margin-bottom: 12px;
-      transition: all 0.2s;
-      cursor: pointer;
+      display: flex; align-items: center; gap: 16px; padding: 16px;
+      border-radius: 12px; background: var(--surface2); border: 1px solid transparent;
+      margin-bottom: 12px; transition: all 0.2s; cursor: pointer;
     }
     .lesson-item:hover { border-color: var(--border); transform: translateX(4px); }
     .lesson-item.completed { border-color: rgba(16,185,129,0.3); }
-
     .lesson-number {
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      background: var(--border);
+      width: 36px; height: 36px; border-radius: 50%; background: var(--border);
       display: flex; align-items: center; justify-content: center;
-      font-family: 'Syne', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--muted);
-      flex-shrink: 0;
+      font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700;
+      color: var(--muted); flex-shrink: 0;
     }
-    .lesson-item.completed .lesson-number {
-      background: rgba(16,185,129,0.15);
-      color: var(--success);
-    }
-
+    .lesson-item.completed .lesson-number { background: rgba(16,185,129,0.15); color: var(--success); }
     .lesson-info { flex: 1; }
-    .lesson-title {
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--text);
-    }
-    .lesson-content {
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-top: 3px;
-    }
-
+    .lesson-title { font-size: 0.9rem; font-weight: 500; color: var(--text); }
+    .lesson-content { font-size: 0.78rem; color: var(--muted); margin-top: 3px; }
     .lesson-action {
-      padding: 7px 16px;
-      border-radius: 8px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      font-family: inherit;
-      cursor: pointer;
-      border: none;
-      transition: all 0.2s;
+      padding: 7px 16px; border-radius: 8px; font-size: 0.78rem; font-weight: 600;
+      font-family: inherit; cursor: pointer; border: none; transition: all 0.2s;
     }
-    .lesson-action.start {
-      background: rgba(59,130,246,0.15);
-      color: var(--accent);
-    }
+    .lesson-action.start { background: rgba(59,130,246,0.15); color: var(--accent); }
     .lesson-action.start:hover { background: rgba(59,130,246,0.25); }
-    .lesson-action.done {
-      background: rgba(16,185,129,0.15);
-      color: var(--success);
-    }
-
-    .loading-state {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding: 40px;
-      color: var(--muted);
-      font-size: 0.875rem;
-    }
-    .spinner {
-      width: 18px; height: 18px;
-      border: 2px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-    }
+    .lesson-action.done { background: rgba(16,185,129,0.15); color: var(--success); }
+    .loading-state { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 40px; color: var(--muted); font-size: 0.875rem; }
+    .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      background: var(--success);
-      color: #fff;
-      padding: 12px 20px;
-      border-radius: 10px;
-      font-size: 0.875rem;
-      font-weight: 500;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: all 0.3s;
-      z-index: 999;
-    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .toast { position: fixed; bottom: 30px; right: 30px; background: var(--success); color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 0.875rem; font-weight: 500; opacity: 0; transform: translateY(10px); transition: all 0.3s; z-index: 999; }
     .toast.show { opacity: 1; transform: translateY(0); }
-
-    @media (max-width: 768px) {
-      .sidebar { display: none; }
-      .main { margin-left: 0; padding: 20px; }
-      .course-header { flex-direction: column; }
+    .enroll-btn {
+      margin-top: 16px; padding: 10px 24px; border-radius: 10px; border: none;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      color: white; font-weight: 600; cursor: pointer; font-size: 0.875rem;
+      font-family: inherit; transition: opacity 0.2s;
     }
+    .enroll-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    @media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; padding: 20px; } .course-header { flex-direction: column; } }
   </style>
 </head>
 <body>
-
   <aside class="sidebar">
     <div class="logo">Edu<span>Sphere</span></div>
     <nav class="nav">
@@ -360,14 +137,10 @@
   </aside>
 
   <main class="main">
-    <button class="back-btn" onclick="window.location.href='dashboard.html'">
-      ← Back to Dashboard
-    </button>
-
+    <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
     <div class="course-header" id="courseHeader">
       <div class="loading-state"><div class="spinner"></div> Loading course…</div>
     </div>
-
     <div class="lessons-panel">
       <h2>📋 Lessons</h2>
       <div id="lessonsList">
@@ -376,185 +149,168 @@
     </div>
   </main>
 
-  <div class="toast" id="toast">✅ Lesson marked as complete!</div>
+  <div class="toast" id="toast"></div>
 
   <script>
     const BASE_URL = "https://edusphere-api-func-f7c4fbgxgncweafs.centralindia-01.azurewebsites.net/api";
+    const params   = new URLSearchParams(window.location.search);
+    const courseId = params.get('courseId') || 1;
 
-const params   = new URLSearchParams(window.location.search);
-const courseId = params.get('courseId') || 1;
-
-function getUserId() {
-  const raw = sessionStorage.getItem('user') || localStorage.getItem('user');
-  const user = raw ? JSON.parse(raw) : null;
-  return user ? user.user_id || user.id || 1 : 1;
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-function handleLogout() {
-  sessionStorage.clear();
-  localStorage.removeItem('user');
-  window.location.href = 'index.html';
-}
-
-async function enrollInCourse(userId, courseId, btn) {
-  btn.disabled = true;
-  btn.textContent = 'Enrolling…';
-  try {
-    const res = await fetch(`${BASE_URL}/enrollCourse`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, courseId })
-    });
-    const data = await res.json();
-
-    if (res.status === 409) {
-      showToast('ℹ️ Already enrolled!');
-      btn.textContent = '✓ Enrolled';
-      btn.style.background = 'rgba(16,185,129,0.15)';
-      btn.style.color = 'var(--success)';
-      return;
+    function getUserId() {
+      const raw  = sessionStorage.getItem('user') || localStorage.getItem('user');
+      const user = raw ? JSON.parse(raw) : null;
+      return user ? user.user_id || user.id || 1 : 1;
     }
 
-    if (!res.ok) throw new Error(data.error || 'Enroll failed');
-
-    btn.textContent = '✓ Enrolled';
-    btn.style.background = 'rgba(16,185,129,0.15)';
-    btn.style.color = 'var(--success)';
-    showToast('🎉 Successfully enrolled!');
-  } catch (err) {
-    btn.disabled = false;
-    btn.textContent = 'Enroll Now';
-    showToast('❌ Could not enroll. Try again.');
-  }
-}
-
-async function markComplete(userId, courseId, lessonId, btn) {
-  btn.disabled = true;
-  btn.textContent = '…';
-  try {
-    const res = await fetch(`${BASE_URL}/updateProgress`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, courseId, lessonId })
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-
-    btn.textContent = '✓ Done';
-    btn.className = 'lesson-action done';
-    btn.closest('.lesson-item').classList.add('completed');
-    btn.closest('.lesson-item').querySelector('.lesson-number').textContent = '✓';
-
-    const fill  = document.getElementById('progressFill');
-    const label = document.getElementById('progressLabel');
-    if (fill && data.progress !== undefined) {
-      fill.style.width  = data.progress + '%';
-      label.textContent = data.progress + '% complete';
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
     }
 
-    showToast('✅ Lesson marked as complete!');
-  } catch (err) {
-    btn.disabled = false;
-    btn.textContent = 'Mark Done';
-    showToast('❌ Could not update progress. Try again.');
-  }
-}
-
-async function loadCourseDetail() {
-  try {
-    const userId = getUserId();
-
-    const res = await fetch(`${BASE_URL}/getCourseDetails?courseId=${courseId}`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    const course  = data.course;
-    const lessons = data.lessons || [];
-
-    // Fetch which lessons user already completed
-    let completedLessonIds = [];
-    try {
-      const progRes = await fetch(`${BASE_URL}/getUserStats?userId=${userId}`);
-      const progData = await progRes.json();
-      completedLessonIds = progData.completedLessonIds || [];
-    } catch (_) {}
-
-    const completedCount = completedLessonIds.length;
-    const totalLessons   = lessons.length;
-    const progressPct    = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
-
-    // Render course header
-    document.getElementById('courseHeader').innerHTML = `
-      <div class="course-icon-lg">📚</div>
-      <div class="course-header-info">
-        <h1>${course.title}</h1>
-        <p>${course.description}</p>
-        <div class="course-meta-chips">
-          <span class="chip accent">${lessons.length} Lessons</span>
-          <span class="chip">Self-paced</span>
-          <span class="chip">Certificate on completion</span>
-        </div>
-        <div class="overall-progress">
-          <div class="progress-header">
-            <span>Overall Progress</span>
-            <span id="progressLabel">${progressPct}% complete</span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" id="progressFill" style="width:${progressPct}%"></div>
-          </div>
-        </div>
-        <div style="margin-top:16px">
-          <button 
-            class="lesson-action start" 
-            style="padding:10px 24px;font-size:0.85rem;"
-            onclick="enrollInCourse(${userId}, ${courseId}, this)">
-            Enroll Now
-          </button>
-        </div>
-      </div>
-    `;
-
-    // Render lessons
-    const list = document.getElementById('lessonsList');
-    if (lessons.length === 0) {
-      list.innerHTML = '<div class="loading-state">No lessons found for this course.</div>';
-      return;
+    function handleLogout() {
+      sessionStorage.clear();
+      localStorage.removeItem('user');
+      window.location.href = 'index.html';
     }
 
-    list.innerHTML = lessons.map((lesson, i) => {
-      const isDone = completedLessonIds.includes(lesson.lesson_id);
-      return `
-        <div class="lesson-item ${isDone ? 'completed' : ''}" id="lesson-${lesson.lesson_id}">
-          <div class="lesson-number">${isDone ? '✓' : i + 1}</div>
-          <div class="lesson-info">
-            <div class="lesson-title">${lesson.title}</div>
-            <div class="lesson-content">${lesson.content}</div>
+    async function enrollInCourse(userId, courseId, btn) {
+      btn.disabled = true;
+      btn.textContent = 'Enrolling…';
+      try {
+        const res = await fetch(`${BASE_URL}/enrollCourse`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, courseId })
+        });
+        const data = await res.json();
+        if (res.status === 409) {
+          showToast('ℹ️ Already enrolled!');
+          btn.textContent = '✓ Enrolled';
+          btn.style.background = 'rgba(16,185,129,0.15)';
+          btn.style.color = 'var(--success)';
+          return;
+        }
+        if (!res.ok) throw new Error(data.error || 'Enroll failed');
+        btn.textContent = '✓ Enrolled';
+        btn.style.background = 'rgba(16,185,129,0.15)';
+        btn.style.color = 'var(--success)';
+        showToast('🎉 Successfully enrolled!');
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Enroll Now';
+        showToast('❌ Could not enroll. Try again.');
+      }
+    }
+
+    async function markComplete(userId, courseId, lessonId, btn) {
+      btn.disabled = true;
+      btn.textContent = '…';
+      try {
+        const res = await fetch(`${BASE_URL}/updateProgress`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, courseId, lessonId })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        btn.textContent = '✓ Done';
+        btn.className = 'lesson-action done';
+        btn.closest('.lesson-item').classList.add('completed');
+        btn.closest('.lesson-item').querySelector('.lesson-number').textContent = '✓';
+        const fill  = document.getElementById('progressFill');
+        const label = document.getElementById('progressLabel');
+        if (fill && data.progress !== undefined) {
+          fill.style.width  = data.progress + '%';
+          label.textContent = data.progress + '% complete';
+        }
+        showToast('✅ Lesson marked as complete!');
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Mark Done';
+        showToast('❌ Could not update progress. Try again.');
+      }
+    }
+
+    async function loadCourseDetail() {
+      try {
+        const userId = getUserId();
+        const res    = await fetch(`${BASE_URL}/getCourseDetails?courseId=${courseId}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data    = await res.json();
+        const course  = data.course;
+        const lessons = data.lessons || [];
+
+        // Fetch completed lessons
+        let completedLessonIds = [];
+        try {
+          const statsRes  = await fetch(`${BASE_URL}/getUserStats?userId=${userId}`);
+          const statsData = await statsRes.json();
+          completedLessonIds = statsData.completedLessonIds || [];
+        } catch (_) {}
+
+        const completedCount = completedLessonIds.length;
+        const progressPct    = lessons.length > 0 ? Math.round((completedCount / lessons.length) * 100) : 0;
+
+        document.getElementById('courseHeader').innerHTML = `
+          <div class="course-icon-lg">📚</div>
+          <div class="course-header-info">
+            <h1>${course.title}</h1>
+            <p>${course.description}</p>
+            <div class="course-meta-chips">
+              <span class="chip accent">${lessons.length} Lessons</span>
+              <span class="chip">Self-paced</span>
+              <span class="chip">Certificate on completion</span>
+            </div>
+            <div class="overall-progress">
+              <div class="progress-header">
+                <span>Overall Progress</span>
+                <span id="progressLabel">${progressPct}% complete</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width:${progressPct}%"></div>
+              </div>
+            </div>
+            <button class="enroll-btn" onclick="enrollInCourse(${userId}, ${courseId}, this)">
+              Enroll Now
+            </button>
           </div>
-          <button 
-            class="lesson-action ${isDone ? 'done' : 'start'}" 
-            ${isDone ? 'disabled' : ''}
-            onclick="markComplete(${userId}, ${courseId}, ${lesson.lesson_id}, this)">
-            ${isDone ? '✓ Done' : 'Mark Done'}
-          </button>
-        </div>
-      `;
-    }).join('');
+        `;
 
-  } catch (err) {
-    document.getElementById('courseHeader').innerHTML = `
-      <div class="loading-state">❌ Could not load course. <a href="dashboard.html" style="color:var(--accent);margin-left:8px">Go back</a></div>
-    `;
-    document.getElementById('lessonsList').innerHTML = '';
-  }
-}
+        const list = document.getElementById('lessonsList');
+        if (lessons.length === 0) {
+          list.innerHTML = '<div class="loading-state">No lessons found for this course.</div>';
+          return;
+        }
 
-loadCourseDetail();
+        list.innerHTML = lessons.map((lesson, i) => {
+          const isDone = completedLessonIds.includes(lesson.lesson_id);
+          return `
+            <div class="lesson-item ${isDone ? 'completed' : ''}" id="lesson-${lesson.lesson_id}">
+              <div class="lesson-number">${isDone ? '✓' : i + 1}</div>
+              <div class="lesson-info">
+                <div class="lesson-title">${lesson.title}</div>
+                <div class="lesson-content">${lesson.content}</div>
+              </div>
+              <button
+                class="lesson-action ${isDone ? 'done' : 'start'}"
+                ${isDone ? 'disabled' : ''}
+                onclick="markComplete(${userId}, ${courseId}, ${lesson.lesson_id}, this)">
+                ${isDone ? '✓ Done' : 'Mark Done'}
+              </button>
+            </div>
+          `;
+        }).join('');
+
+      } catch (err) {
+        document.getElementById('courseHeader').innerHTML =
+          `<div class="loading-state">❌ Could not load course. <a href="dashboard.html" style="color:var(--accent);margin-left:8px">Go back</a></div>`;
+        document.getElementById('lessonsList').innerHTML = '';
+      }
+    }
+
+    loadCourseDetail();
   </script>
 </body>
 </html>
