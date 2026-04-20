@@ -408,18 +408,16 @@
     <span class="results-count" id="resultsCount"></span>
   </div>
 
-  <div class="table-panel">
-    <div class="table-header">
-      <span class="table-title">Registered Users</span>
-      <button class="export-btn" onclick="exportCSV()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Export CSV
-      </button>
-    </div>
-    <div id="tableWrap">
-      <div class="loading-state"><div class="spinner"></div> Loading users…</div>
-    </div>
+  <div class="table-panel" style="margin-top:24px; animation: fadeUp 0.5s 0.3s ease both;">
+  <div class="table-header">
+    <span class="table-title">Add New Course</span>
   </div>
+  <div style="padding:24px; display:flex; gap:12px; flex-wrap:wrap;">
+    <input class="search-input" id="courseTitle" type="text" placeholder="Course Title" style="width:220px"/>
+    <input class="search-input" id="courseDesc" type="text" placeholder="Description" style="width:300px"/>
+    <button class="export-btn" onclick="addCourse()">+ Add Course</button>
+  </div>
+</div>
 </main>
 
 <div class="toast" id="toast"></div>
@@ -602,7 +600,38 @@
         `<div class="loading-state">Could not load users. Please try again.</div>`;
     }
   }
+  async function addCourse() {
+  const title = document.getElementById('courseTitle').value.trim();
+  const desc  = document.getElementById('courseDesc').value.trim();
+  if (!title || !desc) { showToast('Title and description required', 'error'); return; }
+  try {
+    const res = await fetch(`${BASE_URL}/addCourse`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, description: desc })
+    });
+    if (!res.ok) throw new Error();
+    document.getElementById('courseTitle').value = '';
+    document.getElementById('courseDesc').value  = '';
+    showToast('Course added successfully!');
+  } catch {
+    showToast('Could not add course.', 'error');
+  }
+}
 
+async function deleteCourse(courseId, btn) {
+  if (!confirm('Delete this course? This cannot be undone.')) return;
+  btn.disabled = true;
+  try {
+    const res = await fetch(`${BASE_URL}/deleteCourse?courseId=${courseId}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error();
+    showToast('Course deleted!');
+    btn.closest('tr').remove();
+  } catch {
+    btn.disabled = false;
+    showToast('Could not delete course.', 'error');
+  }
+}
   function handleLogout() {
     sessionStorage.clear();
     localStorage.removeItem('user');
