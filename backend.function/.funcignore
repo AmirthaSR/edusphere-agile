@@ -1,10 +1,30 @@
+# Source maps and TypeScript
 *.js.map
 *.ts
+
+# Git
 .git*
+
+# Editor
 .vscode
+
+# Local config
 local.settings.json
-test
+
+# Docs
 getting_started.md
-node_modules/@types/
-node_modules/azure-functions-core-tools/
-node_modules/typescript/
+*.md
+
+# Tests
+test
+
+# node_modules — FULL EXCLUSION ✅
+node_modules
+
+# Build artifacts
+dist
+.nyc_output
+coverage
+
+# Zip files
+*.zip
