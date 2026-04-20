@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EduSphere — Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #080d18;
+      --surface: #0f1724;
+      --surface2: #162035;
+      --surface3: #1c2a42;
+      --border: #1e2e48;
+      --border2: #253550;
+      --accent: #4f8ef7;
+      --accent2: #18d4f0;
+      --gold: #f5a623;
+      --success: #16c98d;
+      --danger: #f05252;
+      --text: #e8edf5;
+      --text2: #a8b8d0;
+      --muted: #4f6a8a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(79,142,247,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79,142,247,0.04) 1px, transparent 1px);
+      background-size: 52px 52px;
+      pointer-events: none; z-index: 0;
+    }
+
+    .sidebar {
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      width: 240px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      padding: 28px 16px;
+      z-index: 100;
+      animation: slideInLeft 0.45s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes slideInLeft {
+      from { transform: translateX(-100%); opacity: 0; }
+      to   { transform: translateX(0); opacity: 1; }
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: 1.45rem;
+      color: #fff; margin-bottom: 36px; padding: 0 10px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .logo-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 12px rgba(79,142,247,0.8);
+    }
+    .logo span { color: var(--accent); }
+
+    .nav-section-label {
+      font-size: 0.65rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); padding: 0 12px; margin: 16px 0 8px;
+    }
+
+    .nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 11px;
+      padding: 10px 12px; border-radius: 10px;
+      cursor: pointer; color: var(--text2);
+      font-size: 0.875rem; font-weight: 500;
+      transition: all 0.18s; border: 1px solid transparent;
+      text-decoration: none; position: relative;
+    }
+    .nav-item:hover { color: var(--text); background: var(--surface2); border-color: var(--border); }
+    .nav-item.active {
+      color: var(--accent); background: rgba(79,142,247,0.1);
+      border-color: rgba(79,142,247,0.22);
+    }
+    .nav-item.active::before {
+      content: ''; position: absolute; left: -16px; top: 50%;
+      transform: translateY(-50%); width: 3px; height: 20px;
+      background: var(--accent); border-radius: 0 3px 3px 0;
+    }
+    .nav-item svg { flex-shrink: 0; opacity: 0.85; }
+    .nav-item.active svg { opacity: 1; }
+
+    .sidebar-footer { border-top: 1px solid var(--border); padding-top: 16px; margin-top: 8px; }
+
+    .user-mini {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 10px; margin-bottom: 4px;
+      background: var(--surface2); border: 1px solid var(--border);
+    }
+    .user-mini-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 0.75rem; color: #fff; flex-shrink: 0;
+    }
+    .user-mini-info { flex: 1; min-width: 0; }
+    .user-mini-name { font-size: 0.8rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-mini-role { font-size: 0.68rem; color: var(--muted); }
+
+    .logout-btn {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 10px;
+      cursor: pointer; color: var(--muted); font-size: 0.85rem;
+      transition: all 0.18s; border: none; background: none;
+      width: 100%; font-family: inherit;
+    }
+    .logout-btn:hover { color: var(--danger); background: rgba(240,82,82,0.08); }
+
+    .main { margin-left: 240px; padding: 32px 36px; position: relative; z-index: 1; }
+
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 32px; animation: fadeUp 0.5s 0.05s ease both;
+    }
+    .topbar-left h1 {
+      font-family: 'Syne', sans-serif; font-size: 1.65rem;
+      font-weight: 800; color: #fff; letter-spacing: -0.3px;
+    }
+    .topbar-left p { color: var(--text2); font-size: 0.875rem; margin-top: 3px; }
+
+    .user-chip {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 50px; padding: 6px 16px 6px 6px;
+    }
+    .avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 0.8rem; color: #fff;
+      box-shadow: 0 0 14px rgba(79,142,247,0.35);
+    }
+    .user-chip-name { font-size: 0.85rem; font-weight: 500; }
+
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 16px; margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 22px;
+      position: relative; overflow: hidden;
+      animation: fadeUp 0.5s ease both;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-3px); }
+    .stat-card:nth-child(1) { animation-delay: 0.1s; }
+    .stat-card:nth-child(2) { animation-delay: 0.15s; }
+    .stat-card:nth-child(3) { animation-delay: 0.2s; }
+    .stat-card:nth-child(4) { animation-delay: 0.25s; }
+    .stat-glow {
+      position: absolute; top: -40px; right: -40px;
+      width: 100px; height: 100px; border-radius: 50%;
+      opacity: 0.12; pointer-events: none;
+    }
+    .stat-card.blue .stat-glow  { background: var(--accent); }
+    .stat-card.cyan .stat-glow  { background: var(--accent2); }
+    .stat-card.gold .stat-glow  { background: var(--gold); }
+    .stat-card.green .stat-glow { background: var(--success); }
+    .stat-card.blue:hover  { border-color: rgba(79,142,247,0.4); }
+    .stat-card.cyan:hover  { border-color: rgba(24,212,240,0.4); }
+    .stat-card.gold:hover  { border-color: rgba(245,166,35,0.4); }
+    .stat-card.green:hover { border-color: rgba(22,201,141,0.4); }
+    .stat-icon {
+      width: 42px; height: 42px; border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 18px; font-size: 1.15rem;
+    }
+    .blue  .stat-icon { background: rgba(79,142,247,0.15); color: var(--accent); }
+    .cyan  .stat-icon { background: rgba(24,212,240,0.15); color: var(--accent2); }
+    .gold  .stat-icon { background: rgba(245,166,35,0.15); color: var(--gold); }
+    .green .stat-icon { background: rgba(22,201,141,0.15); color: var(--success); }
+    .stat-value { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: #fff; line-height: 1; }
+    .stat-label { color: var(--text2); font-size: 0.8rem; margin-top: 6px; }
+
+    .controls {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 20px; flex-wrap: wrap;
+      animation: fadeUp 0.5s 0.2s ease both;
+    }
+    .search-wrap { position: relative; width: 280px; }
+    .search-wrap svg {
+      position: absolute; left: 13px; top: 50%;
+      transform: translateY(-50%); color: var(--muted); pointer-events: none;
+    }
+    .search-input {
+      width: 100%; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 10px 14px 10px 38px; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 0.875rem;
+      outline: none; transition: border-color 0.2s;
+    }
+    .search-input::placeholder { color: var(--muted); }
+    .search-input:focus { border-color: var(--accent); }
+
+    .filter-tabs { display: flex; gap: 6px; }
+    .filter-tab {
+      padding: 8px 16px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--muted); font-size: 0.8rem; font-weight: 500;
+      cursor: pointer; transition: all 0.18s; font-family: inherit;
+    }
+    .filter-tab:hover { color: var(--text); border-color: var(--border2); }
+    .filter-tab.active { background: rgba(79,142,247,0.12); color: var(--accent); border-color: rgba(79,142,247,0.3); }
+
+    .results-count { margin-left: auto; font-size: 0.8rem; color: var(--muted); }
+
+    .table-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+      animation: fadeUp 0.5s 0.25s ease both;
+    }
+    .table-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px; border-bottom: 1px solid var(--border);
+    }
+    .table-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; color: #fff; }
+    .export-btn {
+      display: flex; align-items: center; gap: 7px;
+      padding: 8px 16px; border-radius: 8px;
+      background: rgba(79,142,247,0.12); color: var(--accent);
+      border: 1px solid rgba(79,142,247,0.25); font-size: 0.8rem;
+      font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.18s;
+    }
+    .export-btn:hover { background: var(--accent); color: #fff; }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: var(--surface2); border-bottom: 1px solid var(--border); }
+    th {
+      padding: 12px 20px; text-align: left;
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.07em; text-transform: uppercase;
+      color: var(--muted); white-space: nowrap;
+    }
+    th:last-child { text-align: right; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--surface2); }
+    td { padding: 14px 20px; font-size: 0.875rem; color: var(--text2); vertical-align: middle; }
+    td:last-child { text-align: right; }
+
+    .user-cell { display: flex; align-items: center; gap: 12px; }
+    .user-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 0.78rem; color: #fff; flex-shrink: 0;
+    }
+    .user-name { font-weight: 500; color: var(--text); font-size: 0.875rem; }
+    .user-id { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+    .role-badge {
+      display: inline-flex; align-items: center;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 0.72rem; font-weight: 600;
+    }
+    .role-badge.student { background: rgba(79,142,247,0.12); color: var(--accent); border: 1px solid rgba(79,142,247,0.22); }
+    .role-badge.teacher { background: rgba(245,166,35,0.12); color: var(--gold); border: 1px solid rgba(245,166,35,0.22); }
+    .role-badge.admin   { background: rgba(240,82,82,0.12); color: var(--danger); border: 1px solid rgba(240,82,82,0.22); }
+
+    .progress-cell { display: flex; align-items: center; gap: 10px; }
+    .mini-bar { flex: 1; height: 5px; background: var(--border); border-radius: 99px; overflow: hidden; min-width: 80px; }
+    .mini-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 1s cubic-bezier(0.22,1,0.36,1); }
+    .progress-pct { font-size: 0.78rem; font-weight: 600; color: var(--text); min-width: 32px; text-align: right; }
+
+    .action-btn {
+      padding: 6px 14px; border-radius: 7px; font-size: 0.75rem;
+      font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: all 0.18s; border: 1px solid var(--border);
+      background: var(--surface2); color: var(--text2);
+    }
+    .action-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .loading-state {
+      display: flex; align-items: center; justify-content: center;
+      gap: 10px; padding: 60px; color: var(--muted); font-size: 0.875rem;
+    }
+    .spinner {
+      width: 18px; height: 18px; border: 2px solid var(--border2);
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .empty-row td { text-align: center; padding: 60px; color: var(--muted); font-size: 0.875rem; }
+
+    .toast {
+      position: fixed; bottom: 28px; right: 28px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 13px 20px; font-size: 0.875rem;
+      color: var(--text); box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      transform: translateY(80px); opacity: 0; transition: all 0.3s ease; z-index: 999;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-color: rgba(22,201,141,0.4); }
+    .toast.error   { border-color: rgba(240,82,82,0.4); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 20px; }
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+      .filter-tabs { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo"><div class="logo-dot"></div>Edu<span>Sphere</span></div>
+  <nav class="nav">
+    <div class="nav-section-label">Main</div>
+    <a href="dashboard.html" class="nav-item">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </a>
+    <a href="courses.html" class="nav-item">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      Courses
+    </a>
+    <div class="nav-section-label">Manage</div>
+    <a href="admin.html" class="nav-item active">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Users
+    </a>
+    <a href="#" class="nav-item">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Analytics
+    </a>
+    <a href="#" class="nav-item">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 1 21 12a10 10 0 0 1-1.93 7.07"/><path d="M4.93 19.07A10 10 0 0 1 3 12a10 10 0 0 1 1.93-7.07"/></svg>
+      Settings
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-mini">
+      <div class="user-mini-avatar" id="sidebarAvatar">?</div>
+      <div class="user-mini-info">
+        <div class="user-mini-name" id="sidebarName">Loading…</div>
+        <div class="user-mini-role">Admin</div>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="handleLogout()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Log Out
+    </button>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1>User Management</h1>
+      <p>View and manage all registered users</p>
+    </div>
+    <div class="user-chip">
+      <div class="avatar" id="topAvatar">?</div>
+      <span class="user-chip-name" id="topName">Loading…</span>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card blue"><div class="stat-glow"></div><div class="stat-icon">👥</div><div class="stat-value" id="statTotal">—</div><div class="stat-label">Total Users</div></div>
+    <div class="stat-card cyan"><div class="stat-glow"></div><div class="stat-icon">🎓</div><div class="stat-value" id="statStudents">—</div><div class="stat-label">Students</div></div>
+    <div class="stat-card gold"><div class="stat-glow"></div><div class="stat-icon">👨‍🏫</div><div class="stat-value" id="statTeachers">—</div><div class="stat-label">Teachers</div></div>
+    <div class="stat-card green"><div class="stat-glow"></div><div class="stat-icon">⚡</div><div class="stat-value" id="statActive">—</div><div class="stat-label">With Progress</div></div>
+  </div>
+
+  <div class="controls">
+    <div class="search-wrap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" id="searchInput" type="text" placeholder="Search by name or email…" oninput="filterUsers()">
+    </div>
+    <div class="filter-tabs">
+      <button class="filter-tab active" onclick="setFilter('all', this)">All</button>
+      <button class="filter-tab" onclick="setFilter('student', this)">Students</button>
+      <button class="filter-tab" onclick="setFilter('teacher', this)">Teachers</button>
+    </div>
+    <span class="results-count" id="resultsCount"></span>
+  </div>
+
+  <div class="table-panel" style="margin-top:24px; animation: fadeUp 0.5s 0.3s ease both;">
+  <div class="table-header">
+    <span class="table-title">Add New Course</span>
+  </div>
+  <div style="padding:24px; display:flex; gap:12px; flex-wrap:wrap;">
+    <input class="search-input" id="courseTitle" type="text" placeholder="Course Title" style="width:220px"/>
+    <input class="search-input" id="courseDesc" type="text" placeholder="Description" style="width:300px"/>
+    <button class="export-btn" onclick="addCourse()">+ Add Course</button>
+  </div>
+</div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const BASE_URL = "https://edusphere-api-func-f7c4fbgxgncweafs.centralindia-01.azurewebsites.net/api";
+
+  let allUsers    = [];
+  let userStats   = {};
+  let activeFilter = 'all';
+
+  function initials(name) {
+    return name ? name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2) : '?';
+  }
+
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = (type === 'success' ? '✅ ' : '❌ ') + msg;
+    t.className = `toast ${type} show`;
+    setTimeout(() => t.className = 'toast', 3000);
+  }
+
+  function loadUserProfile() {
+    const raw  = sessionStorage.getItem('user') || localStorage.getItem('user');
+    const user = raw ? JSON.parse(raw) : { name: 'Admin' };
+    const name = user.name || 'Admin';
+    const ini  = initials(name);
+    document.getElementById('topAvatar').textContent     = ini;
+    document.getElementById('topName').textContent       = name;
+    document.getElementById('sidebarAvatar').textContent = ini;
+    document.getElementById('sidebarName').textContent   = name;
+  }
+
+  function setFilter(f, btn) {
+    activeFilter = f;
+    document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterUsers();
+  }
+
+  function filterUsers() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = allUsers.filter(u => {
+      const matchSearch = u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
+      const matchFilter = activeFilter === 'all' || u.role === activeFilter;
+      return matchSearch && matchFilter;
+    });
+    renderTable(filtered);
+  }
+
+  function renderTable(users) {
+    document.getElementById('resultsCount').textContent = `${users.length} user${users.length !== 1 ? 's' : ''}`;
+
+    if (users.length === 0) {
+      document.getElementById('tableWrap').innerHTML =
+        `<table><tbody><tr class="empty-row"><td colspan="6">No users match your search.</td></tr></tbody></table>`;
+      return;
+    }
+
+    document.getElementById('tableWrap').innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>User</th><th>Email</th><th>Role</th>
+            <th>Courses</th><th>Progress</th><th>Toggle Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${users.map(u => {
+            const stats   = userStats[u.user_id] || { totalCourses: 0, avgProgress: 0 };
+            const pct     = stats.avgProgress || 0;
+            const newRole = u.role === 'student' ? 'teacher' : 'student';
+            return `
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <div class="user-avatar">${initials(u.name)}</div>
+                    <div>
+                      <div class="user-name">${u.name}</div>
+                      <div class="user-id">#${u.user_id}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>${u.email}</td>
+                <td><span class="role-badge ${u.role}">${u.role}</span></td>
+                <td style="color:var(--text);font-weight:500">${stats.totalCourses}</td>
+                <td>
+                  <div class="progress-cell">
+                    <div class="mini-bar"><div class="mini-fill" style="width:${pct}%"></div></div>
+                    <span class="progress-pct">${pct}%</span>
+                  </div>
+                </td>
+                <td>
+                  <button class="action-btn" onclick="toggleRole(${u.user_id}, '${u.name}', '${newRole}', this)">
+                    → ${newRole}
+                  </button>
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    `;
+  }
+
+  async function toggleRole(userId, name, newRole, btn) {
+    if (!window.confirm(`Change ${name}'s role to "${newRole}"?`)) return;
+    btn.disabled = true;
+    btn.textContent = '…';
+    try {
+      const res = await fetch(`${BASE_URL}/updateRole`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, role: newRole })
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const user = allUsers.find(u => u.user_id === userId);
+      if (user) user.role = newRole;
+      filterUsers();
+      updateSummaryStats();
+      showToast(`${name} is now a ${newRole}!`);
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = `→ ${newRole}`;
+      showToast('Could not update role. Try again.', 'error');
+    }
+  }
+
+  function exportCSV() {
+    const rows = [['ID','Name','Email','Role','Courses','Avg Progress']];
+    allUsers.forEach(u => {
+      const s = userStats[u.user_id] || {};
+      rows.push([u.user_id, u.name, u.email, u.role, s.totalCourses || 0, (s.avgProgress || 0) + '%']);
+    });
+    const csv  = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a    = document.createElement('a');
+    a.href     = URL.createObjectURL(blob);
+    a.download = 'edusphere-users.csv';
+    a.click();
+    showToast('CSV exported successfully!');
+  }
+
+  function updateSummaryStats() {
+    const students     = allUsers.filter(u => u.role === 'student').length;
+    const teachers     = allUsers.filter(u => u.role === 'teacher').length;
+    const withProgress = Object.values(userStats).filter(s => s.avgProgress > 0).length;
+    document.getElementById('statTotal').textContent    = allUsers.length;
+    document.getElementById('statStudents').textContent = students;
+    document.getElementById('statTeachers').textContent = teachers;
+    document.getElementById('statActive').textContent   = withProgress;
+  }
+
+  async function loadStats(users) {
+    const chunks = [];
+    for (let i = 0; i < users.length; i += 4) chunks.push(users.slice(i, i+4));
+    for (const chunk of chunks) {
+      await Promise.all(chunk.map(async u => {
+        try {
+          const res = await fetch(`${BASE_URL}/getUserStats?userId=${u.user_id}`);
+          if (res.ok) userStats[u.user_id] = await res.json();
+        } catch (_) {}
+      }));
+    }
+  }
+
+  async function loadUsers() {
+    try {
+      const res = await fetch(`${BASE_URL}/getAllUsers`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      allUsers = data.users || [];
+      filterUsers();
+      updateSummaryStats();
+      await loadStats(allUsers);
+      filterUsers();
+      updateSummaryStats();
+    } catch (err) {
+      document.getElementById('tableWrap').innerHTML =
+        `<div class="loading-state">Could not load users. Please try again.</div>`;
+    }
+  }
+  async function addCourse() {
+  const title = document.getElementById('courseTitle').value.trim();
+  const desc  = document.getElementById('courseDesc').value.trim();
+  if (!title || !desc) { showToast('Title and description required', 'error'); return; }
+  try {
+    const res = await fetch(`${BASE_URL}/addCourse`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, description: desc })
+    });
+    if (!res.ok) throw new Error();
+    document.getElementById('courseTitle').value = '';
+    document.getElementById('courseDesc').value  = '';
+    showToast('Course added successfully!');
+  } catch {
+    showToast('Could not add course.', 'error');
+  }
+}
+
+async function deleteCourse(courseId, btn) {
+  if (!confirm('Delete this course? This cannot be undone.')) return;
+  btn.disabled = true;
+  try {
+    const res = await fetch(`${BASE_URL}/deleteCourse?courseId=${courseId}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error();
+    showToast('Course deleted!');
+    btn.closest('tr').remove();
+  } catch {
+    btn.disabled = false;
+    showToast('Could not delete course.', 'error');
+  }
+}
+  function handleLogout() {
+    sessionStorage.clear();
+    localStorage.removeItem('user');
+    window.location.href = 'index.html';
+  }
+
+  loadUserProfile();
+  loadUsers();
+</script>
+</body>
+</html>
