@@ -9,39 +9,73 @@ const config = {
   options: { encrypt: true }
 };
 
+const CORS = {
+  "Content-Type": "application/json",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type"
+};
+
 module.exports = async function (context, req) {
+  if (req.method === 'OPTIONS') {
+    context.res = { status: 204, headers: CORS, body: '' };
+    return;
+  }
+
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password } = req.body || {};
 
     if (!name || !email || !password) {
-      context.res = { status: 400, body: { error: 'name, email and password are required' } };
+      context.res = { status: 400, headers: CORS, body: { error: 'name, email and password are required' } };
       return;
     }
 
-    await sql.connect(config);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      context.res = { status: 400, headers: CORS, body: { error: 'Invalid email format' } };
+      return;
+    }
 
-    // Check if email already exists
-    const existing = await sql.query`SELECT * FROM Users WHERE email = ${email}`;
+    if (password.length < 6) {
+      context.res = { status: 400, headers: CORS, body: { error: 'Password must be at least 6 characters' } };
+      return;
+    }
+
+    const pool = await sql.connect(config);
+
+    const existing = await pool.request()
+      .input('email', sql.NVarChar, email.toLowerCase().trim())
+      .query('SELECT user_id FROM Users WHERE email = @email');
+
     if (existing.recordset.length > 0) {
-      context.res = { status: 409, body: { error: 'Email already registered' } };
+      context.res = { status: 409, headers: CORS, body: { error: 'Email already registered' } };
       return;
     }
 
-    // Hash password
     const hashed = await bcrypt.hash(password, 10);
 
-    // Insert user
-    await sql.query`
-      INSERT INTO Users (name, email, password, role)
-      VALUES (${name}, ${email}, ${hashed}, 'student')
-    `;
+    const insertResult = await pool.request()
+      .input('name',     sql.NVarChar, name.trim())
+      .input('email',    sql.NVarChar, email.toLowerCase().trim())
+      .input('password', sql.NVarChar, hashed)
+      .query(`
+        INSERT INTO Users (name, email, password, role)
+        OUTPUT INSERTED.user_id, INSERTED.name, INSERTED.email, INSERTED.role
+        VALUES (@name, @email, @password, 'student')
+      `);
+
+    const newUser = insertResult.recordset[0];
 
     context.res = {
       status: 201,
-      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
-      body: { success: true, message: 'Account created successfully' }
+      headers: CORS,
+      body: {
+        success: true,
+        message: 'Account created successfully',
+        user: { user_id: newUser.user_id, name: newUser.name, email: newUser.email, role: newUser.role }
+      }
     };
   } catch (err) {
-    context.res = { status: 500, body: { error: err.message } };
+    context.log('registerUser error:', err.message);
+    context.res = { status: 500, headers: CORS, body: { error: 'Server error. Please try again.' } };
   }
 };
