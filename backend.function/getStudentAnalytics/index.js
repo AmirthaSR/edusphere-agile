@@ -57,8 +57,7 @@ module.exports = async function (context, req) {
             l.lesson_id,
             l.title        AS lesson_title,
             l.order_num,
-            CASE WHEN p.completed = 1 THEN 1 ELSE 0 END AS is_completed,
-            p.completed_at
+            CASE WHEN p.completed = 1 THEN 1 ELSE 0 END AS is_completed
           FROM lessons l
           LEFT JOIN progress p
             ON l.lesson_id = p.lesson_id
@@ -84,7 +83,7 @@ module.exports = async function (context, req) {
           title:        l.lesson_title,
           order_num:    l.order_num,
           is_completed: l.is_completed === 1,
-          completed_at: l.updated_at || null
+          completed_at: null
         }))
       };
     }));
