@@ -7,6 +7,7 @@
     }
   ],
   "navigationFallback": {
-    "rewrite": "/login.html"
+    "rewrite": "/login.html",
+    "exclude": ["/*.html", "/*.js", "/*.css"]
   }
 }
