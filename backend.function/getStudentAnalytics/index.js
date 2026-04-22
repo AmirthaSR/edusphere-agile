@@ -58,7 +58,7 @@ module.exports = async function (context, req) {
             l.title        AS lesson_title,
             l.order_num,
             CASE WHEN p.completed = 1 THEN 1 ELSE 0 END AS is_completed,
-            p.updated_at
+            p.completed_at
           FROM lessons l
           LEFT JOIN progress p
             ON l.lesson_id = p.lesson_id
