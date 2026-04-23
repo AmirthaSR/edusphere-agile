@@ -32,7 +32,7 @@ module.exports = async function (context, req) {
 
     const courseResult = await pool.request()
       .input('courseId', sql.Int, courseId)
-      .query('SELECT course_id, title, description FROM Courses WHERE course_id = @courseId');
+      .query('SELECT course_id, title, description,video_url FROM Courses WHERE course_id = @courseId');
 
     if (courseResult.recordset.length === 0) {
       context.res = { status: 404, headers: CORS, body: { error: 'Course not found' } };
