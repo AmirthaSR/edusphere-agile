@@ -602,18 +602,20 @@
     }
   }
   async function addCourse() {
-  const title = document.getElementById('courseTitle').value.trim();
-  const desc  = document.getElementById('courseDesc').value.trim();
+  const title    = document.getElementById('courseTitle').value.trim();
+  const desc     = document.getElementById('courseDesc').value.trim();
+  const videoUrl = document.getElementById('courseVideo').value.trim(); // ADD
   if (!title || !desc) { showToast('Title and description required', 'error'); return; }
   try {
     const res = await fetch(`${BASE_URL}/addCourse`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, description: desc })
+      body: JSON.stringify({ title, description: desc, video_url: videoUrl || null }) // ADD
     });
     if (!res.ok) throw new Error();
     document.getElementById('courseTitle').value = '';
     document.getElementById('courseDesc').value  = '';
+    document.getElementById('courseVideo').value = ''; // ADD
     showToast('Course added successfully!');
   } catch {
     showToast('Could not add course.', 'error');
