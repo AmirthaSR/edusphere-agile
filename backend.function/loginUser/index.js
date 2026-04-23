@@ -41,7 +41,7 @@ module.exports = async function (context, req) {
       body: {
         success: true,
         user: {
-          user_id: user.userId,
+          user_id: user.user_id,
           name: user.name,
           email: user.email,
           role: user.role
